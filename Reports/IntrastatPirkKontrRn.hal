@@ -1,0 +1,140 @@
+external inner procedure HT2Per(Date, Date , var string);
+external inner function Boolean GetFirstPurchaseItem2(string,string,string,var record PIVc);
+
+global
+procedure IntrastPurchCtrlRn(record RcVc RepSpec)
+begin
+  record PUVc PUr;
+  row PUVc PUrw;
+  record INVc INr;
+  record CUVc CUr;
+  integer i,rwcnt,rw;
+  boolean TrHs,firstf,printf;
+  string 100 tstr;
+  string 10 senderCntry,orignCntry;
+  record PIVc PIr;
+  val totwght,bval;
+
+  rw = 1;
+  StartReportJob("Stengel: Intrastat (Pirkimai)");
+  HT2Per(RepSpec.sStartDate,RepSpec.sEndDate,tstr);
+  Header(rw,tstr,1);
+  rw = rw + 1;
+  EndHeader;
+  StartFormat(15);
+  OutString(0,0,UsetStr(18011),false);				//"Gavimo nr."
+  OutString(25,0,UsetStr(12740),false);				//"Gavimo data."
+  OutString(50,0,UsetStr(12594),false);			//"Tiek�jas"
+  OutString(80,0,UsetStr(6024),false);			//"Pavadinimas (tiekejo)"
+  OutString(110,0,UsetStr(6104),false);				//"Komentaras"
+  OutString(125,0,UsetStr(5246),false);				//"Valiuta"
+  OutString(140,0,UsetStr(5386),false);				//"Preke"
+  OutString(180,0,UsetStr(2408),false);				//"Aprasymas (Prekes)"
+  OutString(220,0,"Nom.kodas",false);				//""
+  OutString(265,0,"Neto svoris,",true);				//""
+  OutString(290,0,UsetStr(5279),true);				//"Kiekis"
+  OutString(320,0,UsetStr(8294),true);				//"vnt.kaina"
+  OutString(350,0,UsetStr(8295),true);				//"Savikaina"
+  OutString(380,0,UsetStr(8296),true);				//"Suma"
+  OutString(400,0,UsetStr(25001),false);				//"Pristatymo"
+  OutString(430,0,UsetStr(25003),false);				//"Salis siunteja"
+  OutString(1,0,UsetStr(25005),true);				//"Kilm�s �alis"
+  EndFormat;
+  StartFormat(15);
+
+  OutString(0,0,"",false);				//"Gavimo nr."
+  OutString(25,0,"",false);				//"Gavimo data."
+  OutString(50,0,"",false);			//"Tiek�jas"
+  OutString(80,0,"",false);			//"Pavadinimas (tiekejo)"
+  OutString(110,0,"",false);				//"Komentaras"
+  OutString(125,0,"",false);				//"Valiuta"
+  OutString(140,0,"",false);				//"Preke"
+  OutString(180,0,"",false);				//"Aprasymas (Prekes)"
+  OutString(220,0,"",false);				//""
+  OutString(265,0,"KG",true);				//""
+  OutString(290,0,"",true);				//"Kiekis"
+  OutString(320,0,"",true);				//"vnt.kaina"
+  OutString(350,0,"",true);				//"Savikaina"
+  OutString(380,0,"",true);				//"Suma"
+  OutString(400,0,UsetStr(25002),false);				//"Salyga"
+  OutString(430,0,UsetStr(25004),false);				//"Salis siunteja"
+  OutString(1,0,UsetStr(25006),true);					//"Kilm�s �alis"
+  EndFormat;
+  Black_Divider(0,1);
+
+  TrHs = true;
+  PUr.TransDate = RepSpec.sStartDate;
+  resetLoop(PUr);
+  while(Loopkey("TransDate",PUr,1,TrHs)) begin
+    if (PUr.TransDate > RepSpec.sEndDate) then begin TrHs = false; end;
+    if (TrHs) and (PUr.OKFlag == 1) then begin
+      CUr.Code = PUr.VECode;
+      senderCntry = "";
+      if ReadFirstMain(CUr,1,true) then begin
+        firstf = true;
+        if (RepSpec.flags[1]!=1) and (CUr.ExportFlag==0) then begin firstf = false; end;		//Vietin�
+        if (RepSpec.flags[2]!=1) and (CUr.ExportFlag==1) then begin firstf = false; end;		//ES
+        if (RepSpec.flags[3]!=1) and (CUr.ExportFlag==3) then begin firstf = false; end;		//ES (su PVM)
+        if (RepSpec.flags[4]!=1) and (CUr.ExportFlag==2) then begin firstf = false; end;		//Ne ES
+        if (RepSpec.flags[5]!=1) and (CUr.ExportFlag==4) then begin firstf = false; end;		//Ne ES (su PVM)
+        if PUr.Invalid == 1 then begin firstf = false; end;
+
+        if firstf then begin
+          if ((CUr.ExportFlag == 1) or (CUr.ExportFlag == 3)) then begin
+        	   senderCntry = CUr.CountryCode;
+          end;
+
+      	  rwcnt = MatRowCnt(PUr);
+  	      for (i=0;i<rwcnt;i=i+1) begin
+  	      	MatRowGet(PUr,i,PUrw);
+            if PUrw.ovst == 0 then begin
+    	        if (nonblank(PUrw.CountryOfOrg)) then begin
+    	          orignCntry = PUrw.CountryOfOrg;
+        	    end else begin
+        	      if (GetFirstPurchaseItem2(PUrw.ArtCode,PUr.Location,PUr.VECode,PIr)) then begin end;
+        	      orignCntry = PIr.OrgCountry;
+        	    end;
+
+      		    StartFormat(15);
+      		    OutString(0,0,PUr.SerNr,false);
+      		    OutString(25,0,PUr.TransDate,false);
+      		    OutString(50,0,PUr.VECode,false);
+      		    OutString(80,0,PUr.VEName,false);
+      		    OutString(110,0,PUr.Comment,false);
+      		    OutString(125,0,PUr.CurncyCode,false);
+      		    OutString(140,0,PUrw.ArtCode,false);
+      		    totwght = bval;
+      		    INr.Code = PUrw.ArtCode;
+      		    ResetLoop(INr);
+      		    if ReadFirstMain(INr,1,true) then begin
+      		      totwght = INr.NetWeight;
+      		    end;
+      		    OutString(180,0,PUrw.Spec,false);
+      		    OutString(220,0,INr.EUCodex,false);
+
+      	        /*if (INr.Unittext == "KG") then begin
+      	      	  totwght = PUrw.Quant;
+      	        end else begin
+      			  if nonblank(INr.NetWeight) then begin
+      			    totwght = PUrw.Quant * INr.NetWeight;
+      			  end;
+      	        end; */
+
+      		    OutVal(265,0,totwght,M45Val,true);
+      		    OutString(290,0,PUrw.Quant,true);
+      		    OutString(320,0,PUrw.UPrice,true);
+      		    OutString(350,0,PUrw.CostPrice,true);
+      		    OutString(380,0,PUrw.Sum,true);
+      		    OutString(400,0,PUr.FreightCode,false);		//Pristatymo salyga
+      		    OutString(430,0,senderCntry,false);
+      		    OutString(1,0,orignCntry,true);
+      		    EndFormat;
+      		  end;
+      		end;
+    	  end;
+      end;
+    end;
+  end;
+  EndJob;
+  return;
+end;

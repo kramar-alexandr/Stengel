@@ -1,0 +1,40 @@
+
+SetLangMode(LangLithuanian,"LIT",2);
+
+window LitTaxXmlEClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs;
+  boolean NextLine;
+  WindowBegin("Apibrėžti i.SAF",LitTaxXmlEClass,CGEcW,RcType);
+  SetWRect(20,80,400,290);
+  PeriodField(h=100,v=6,"Periodas");
+  vs=20;
+  EditFieldTL(h,v+=vs,150,"Serija",M4UStr,Normal,21,f4,false,0);
+  EditFieldTL(h,v+=vs,100,"Pirkėjas",M4UStr,Normal,20,f3,false,CUSClass);
+  EditFieldTL(h,v+=vs,100,"PVM kodas",M4UStr,Normal,20,f2,false,VATCodeSClass);
+  EditFieldTL(h,v+=vs,80,"Neįtraukti mok. sąl.",M4UStr,Normal,21,f1,false,PDSClass);
+  CheckBox(h,v+=30,0,"Įtraukti įplaukas ir mokėjimus",flags[0]);
+  CheckBox(h,v+=16,0,"Include expenses",flags[1]);
+  CheckBox(h,v+=16, 0,"Sukeisti įmonės kodą su PVM mok. kodu",flags[8]);
+  EndWindow;
+end;
+
+window LitiSAFRClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs;
+  boolean NextLine;
+  WindowBegin("Apibrėžti i.SAF",LitiSAFRClass,CGRcW,RcType);
+  SetWRect(20,80,400,290);
+  PeriodField(h=100,v=6,"Periodas");
+  vs=20;
+  EditFieldTL(h,v+=vs,150,"Serija",M4UStr,Normal,21,f4,false,0);
+  EditFieldTL(h,v+=vs,100,"Pirkėjas",M4UStr,Normal,20,f3,false,CUSClass);
+  EditFieldTL(h,v+=vs,100,"PVM kodas",M4UStr,Normal,20,f2,false,VATCodeSClass);
+  EditFieldTL(h,v+=vs,80,"Neįtraukti mok. sąl.",M4UStr,Normal,21,f1,false,PDSClass);
+  CheckBox(h,v+=30,0,"Įtraukti įplaukas ir mokėjimus",flags[0]);
+  CheckBox(h,v+=16,0,"Include expenses",flags[1]);
+  CheckBox(h,v+=16, 0,"Sukeisti įmonės kodą su PVM mok. kodu",flags[8]);
+  EndWindow;
+end;

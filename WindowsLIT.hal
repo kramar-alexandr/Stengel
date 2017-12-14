@@ -1,0 +1,92 @@
+
+SetLangMode(LangLithuanian,"LIT",2);
+
+window StengelIntrasRClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vm,vs;
+
+  WindowBegin("Eksporto Intrastato ataskaita - Stengel",StengelIntrasRClass,CGRcW,RcType);
+  SetWRect(20,80,370,180);
+  h = 100; v = 20; vm = 20;
+  PeriodField(h,v+=20,"Periodas");
+  //EditFieldTL(h,v+=20, 150,"Saskaita", M4UStr,Normal,20,AccStr,false,AccSClass);
+  EditFieldTL(h,v+=20, 150,"Kalba", M4UStr,Normal,30,f1,false,LangSClass);
+  EndWindow;
+
+  return;
+end;
+
+window InsertNetWeightINVClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+
+  WindowBegin("Neto svorio užpildymas prekėms",InsertNetWeightINVClass,CGMnt,RcType);
+  SetWRect(100,100,400,300);
+  EndWindow;
+
+  return;
+end;
+
+window IntraPirkItaRClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vm,vs;
+
+  WindowBegin("Stengel: Intrastat (Pirkimai)",IntraPirkItaRClass,CGRcW,RcType);
+  SetWRect(20,80,400,100);
+  h = 150; v= 20; vs = 20;
+  PeriodField(h,v=10,"Periodas");
+  EndWindow;
+
+  return;
+end;
+
+window IntrastPurchCtrlRClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vm,vs;
+
+  WindowBegin("Stengel:Intrastat Pirk.kontrolinė ataskaita",IntrastPurchCtrlRClass,CGRcW,RcType);
+  SetWRect(20,80,400,180);
+  h = 150; v= 20; vs = 20;
+  PeriodField(h,v=10,"Periodas");
+  ButtonFrame(h,v=54,150,5,"PVM sritis");
+  CheckBox(h,v,0,"Vietinė",flags[1]);
+  CheckBox(h,v+=16,0,"ES",flags[2]);
+  CheckBox(h,v+=16,0,"ES (su PVM)",flags[3]);
+  CheckBox(h,v+=16,0,"Ne ES",flags[4]);
+  CheckBox(h,v+=16,0,"Ne ES (su PVM)",flags[5]);
+
+  EndWindow;
+
+  return;
+end;
+
+window STG_AssetBalRClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v;
+
+  WindowBegin("IT Likučiai datai",STG_AssetBalRClass,CGRcW,RcType);
+    SetWRect(20,80,450,150);
+    EditFieldTL(h=100,v=20,100,"Iki",M4Date,Normal,10,d1,false,PasteCurDate);
+  EndWindow;
+
+  return;
+end;
+
+window STG_IntraStatTClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,v,vs;
+  WindowBegin("Stengel - Intrastat",STG_IntraStatTClass,CGSbl,-);
+  SetBlid(STG_SettingBlock);
+  SetWRect(64,80,400,140);
+  v=30;vs = 20; h = 100;
+  ButtonFrame(h,v,123,2,"Weight from SL Invocies");
+  RadioButton(h,v,0,0,"Disable",InvWeightFlag);
+  RadioButton(h,v+=16,1,0,"Enable",InvWeightFlag);
+  EndFrame;
+  EndWindow;
+end;

@@ -1,0 +1,185 @@
+external inner procedure OneAT2UnitDeprCalculation(Integer,Integer,Integer,Boolean,Date,Date,string,var val,var val,var val,var val,var string,val,val,Boolean);
+external inner procedure RevaluationOnDate(Integer,Integer,string,Date,Date,var val,var val,var string);
+
+global
+procedure STG_AssetBalRClassReportDefaults(Integer wn)
+begin
+  record RcVc RepSpec;
+  date td;
+
+  DeselectWindow(wn,false);
+  GetWindowRecord(wn,RepSpec);
+  ReportDefaults(RepSpec,"STG_AssetBalRClass");
+
+  td = CurrentDate;
+  td.day = DaysInMonth(GetYear(td), GetMonth(td));
+  RepSpec.d1 = td;
+  PutWindowRecord(wn,RepSpec);
+
+return;
+end;
+
+// global
+// function boolean STG_AssetBalRClassOnOKWindow(integer wn)
+// begin
+//   record RcVc RepSpec;
+//   boolean res;
+//
+//   res = true;
+//   GetWindowRecord(wn,RepSpec);
+//
+// LSTG_AssetBalRClassOnOKWindow:;
+//   STG_AssetBalRClassOnOKWindow = res;
+//   return;
+// end;
+
+function val GetAssetTransSumOnDate(record AT2UnitVc ATUnitr, date ondate)
+begin
+  val res;
+  record AT2TransVc ATTransr;
+  boolean wloop;
+
+  wloop = True;
+  ATTransr.InventoryNr = ATUnitr.InventoryNr;
+  ATTransr.Type = 0;
+  While LoopKey("Type",ATTransr,2,wloop) begin
+    if ATTransr.InventoryNr != ATUnitr.InventoryNr or ATTransr.Type != 0 then begin
+      wloop = false;
+    end else begin
+      if ATTransr.TransDate <= ondate then begin
+        res = res + ATTransr.Sum;
+      end;
+    end;
+  end;
+
+  GetAssetTransSumOnDate = res;
+  return;
+end;
+
+procedure PrintOneAssetInfo(record AT2UnitVc ATUnitr, date ondate, var val totpurch, var val totdpr, var val totres,array integer colx)
+begin
+  record DprModVc DprModr;
+  val purchval,remval;
+  val dprbef,dprv,tv3,t;
+  val startval,resval,acumdpr;
+  date startingdate;
+  string 255 tstr,dmcode;
+
+
+  DprModr.Code = ATUnitr.Model1;
+  ReadFirstMain(DprModr,1,true);
+
+  startingdate = ATUnitr.StartingDate1;
+  if (blankdate(startingdate)) then begin
+    startingdate = ATUnitr.UsedFromDate;
+  end;
+  if (blankdate(startingdate)) then begin
+    startingdate = ATUnitr.PurchaseDate;
+  end;
+
+  purchval = ATUnitr.PurchVal;
+  RevaluationOnDate(0,2,ATUnitr.InventoryNr,startingdate,ondate,purchval,resval,dmcode);
+  acumdpr = GetAssetTransSumOnDate(ATUnitr,ondate);
+  // OneAT2UnitDeprCalculation(2,1,0,false,startingdate,ondate,ATUnitr.InventoryNr,dprbef,dprv,t,t,tstr,tv3,ATUnitr.ResVal,false);
+  // acumdpr = acumdpr + dprv + dprbef;
+  remval = ATUnitr.Quantity*purchval - acumdpr;
+  if (remval<0) then begin remval = 0; end;
+
+  StartFormat(15);
+  OutString(colx[0],"",ATUnitr.InventoryNr,false);
+  OutString(colx[1],"",ATUnitr.Description,false);
+  OutString(colx[2],"",ATUnitr.AT2Code,false);
+  OutString(colx[3],"",ATUnitr.AT2Class,false);
+  OutString(colx[4],"",ATUnitr.PurchaseDate,false);
+  OutString(colx[5],"",DprModr.Description,false);
+  OutVal(colx[6],"",ATUnitr.Quantity,M4UVal,true);
+  OutVal(colx[7],"",purchval,M4Val,true);
+  OutVal(colx[8],"",ATUnitr.ResVal,M4Val,true);
+  OutString(colx[9],"",ATUnitr.StartingDate1,false);
+  OutVal(colx[10],"",acumdpr,M4Val,true);
+  OutVal(colx[11],"",remval,M4Val,true);
+  EndFormat;
+  Gray_Divider(1,0);
+
+  totpurch = totpurch + purchval;
+  totdpr = totdpr + acumdpr;
+  totres = totres + remval;
+
+  return;
+end;
+
+global
+procedure STG_AssetBalRn(Record RcVc RepSpec)
+Begin
+  integer rw;
+  record AT2UnitVc AT2Unitr;
+  boolean wloop, testf;
+  val totpurch, totdpr, totrem;
+  array integer colx;
+
+  StartReportJob(USetStr(1000007));
+  rw = 1;
+
+  if blankdate(RepSpec.d1) then begin
+    RepSpec.d1 = CurrentDate;
+  end;
+  Header(rw, RepSpec.d1, 1);
+  EndHeader;
+
+  colx[0] = 0;
+  colx[1] = 20;
+  colx[2] = 130;
+  colx[3] = 150;
+  colx[4] = 190;
+  colx[5] = 230;
+  colx[6] = 290;
+  colx[7] = 330;
+  colx[8] = 370;
+  colx[9] = 380;
+  colx[10] = 440;
+  colx[11] = 480;
+
+  OutString(190,"",USetStr(1000015) & DateToString(RepSpec.d1,"YYYY-MM-DD"),false);
+
+  StartFormat(15);
+  OutString(colx[0],"",USetStr(1000016),false);
+  OutString(colx[1],"",USetStr(1000008),false);
+  OutString(colx[2],"",USetStr(1000017),false);
+  OutString(colx[3],"",USetStr(1000018),false);
+  OutString(colx[4],"",USetStr(1000009),false);
+  OutString(colx[5],"",USetStr(1000010),false);
+  OutString(colx[6],"",USetStr(1000011),true);
+  OutString(colx[7],"",USetStr(1000012),true);
+  OutString(colx[8],"",USetStr(1000019),true);
+  OutString(colx[9],"",USetStr(1000020),false);
+  OutString(colx[10],"",USetStr(1000013),true);
+  OutString(colx[11],"",USetStr(1000014),true);
+  EndFormat;
+  Black_Divider(1,0);
+
+  AT2Unitr.InventoryNr = "";
+  wloop = true;
+  While LoopMain(AT2Unitr,1,wloop) begin
+    testf = true;
+    if nonblankdate(RepSpec.d1) and AT2Unitr.PurchaseDate > RepSpec.d1 then begin
+      testf = false;
+    end;
+    if testf then begin
+      PrintOneAssetInfo(AT2Unitr, RepSpec.d1, totpurch, totdpr, totrem, colx);
+    end;
+  end;
+
+  Black_Divider(1,0);
+  StartFormat(15);
+  OutString(0,"",USetStr(12010),false);
+  OutString(2,"","",false);
+  OutString(3,"","",false);
+  OutString(4,"","",true);
+  OutVal(5,"",totpurch,M4Val,true);
+  OutVal(6,"",totdpr,M4Val,true);
+  OutVal(1,"",totrem,M4Val,true);
+  EndFormat;
+  EndJob;
+
+return;
+end;

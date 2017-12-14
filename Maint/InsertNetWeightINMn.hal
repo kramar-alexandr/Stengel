@@ -1,0 +1,16 @@
+
+global updating
+procedure InsertNetWeightINMn(record RcVc RepSpec)
+begin
+  record INVc INr,oldINr;
+
+  while LoopMain(INr,1,true) begin
+    if nonblank(INr.UnitCoefficient) then begin
+      RecordCopy(oldINr,INr);
+      INr.NetWeight = INr.UnitCoefficient;		//INr.NetWeight-Neto svoris;	INr.UnitCoefficient-Vnt. koeficientas,
+      if RecordUpdate(oldINr,INr,false) then begin end;
+    end;
+  end;
+
+  return;
+end;
