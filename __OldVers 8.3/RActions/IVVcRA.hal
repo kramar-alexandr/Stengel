@@ -1,0 +1,35 @@
+
+global
+updating function LongInt IVVcRecordCheck(record IVVc IVp,record IVVc IV2p,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  row IVVc IVrw;
+  integer i,rwc;
+  record STG_SettingBlock STG_Settingr;
+  boolean unokf;
+
+  BlockLoad(STG_Settingr);
+
+  if (IVp.OKFlag==0) then begin
+    if (stat==Rs_update) then begin
+      if (IV2p.OKFlag==1) then begin unokf = true; end;
+    end;
+  end;
+
+  if STG_Settingr.InvWeightFlag == 1 and !unokf then begin
+    rwc = MatRowCnt(IVp);
+    for(i=0;i<rwc;i=i+1)begin
+      MatRowGet(IVp,i,IVrw);
+      if nonblank(IVrw.ArtCode) and blank(IVrw.STG_Weight) then begin
+        RecordCheckError(1058,"",i,"STG_Weight");
+        res = -1;
+        goto LIVVcRecordCheck;
+      end;
+    end;
+  end;
+
+  res = inner.IVVcRecordCheck(IVp,IV2p,stat,long4);
+LIVVcRecordCheck:;
+  IVVcRecordCheck = res;
+  return;
+end;

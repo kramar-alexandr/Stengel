@@ -1,0 +1,369 @@
+external inner function val MulRateToBase1(var string,val,val,val,val,val,val,roundmode);
+external inner function val MulWithCustomsRateToBase1(string,Date,val);
+external inner procedure HT2Per(Date, Date , var string);
+external inner function Boolean GetFirstPurchaseItem2(string,string,string,var record PIVc);
+
+
+procedure sortPurchaseItem(array string aDelivdeal,array string aCntrsender,array string aCntrorigin,array val aWeight,array val aInvValue,array val aSum,integer k)
+begin
+  string 100 Delivdeal,Cntrsender,Cntrorigin;
+  val Weight,InvValue,Sum;
+  integer i;
+  boolean sort;
+  
+  sort = true;
+  while (sort) begin
+    sort = false;	  
+  
+  for (i=0;i<k-1;i=i+1) begin
+    if ((aDelivdeal[i]>aDelivdeal[i+1]) or ((aDelivdeal[i]==aDelivdeal[i+1]) and (aCntrsender[i]>aCntrsender[i+1])) or ((aDelivdeal[i]==aDelivdeal[i+1]) and (aCntrsender[i]==aCntrsender[i+1]) and (aCntrorigin[i]>aCntrorigin[i+1]))) then begin
+    //if (aDelivdeal[i]>aDelivdeal[i+1]) or (aCntrsender[i]>aCntrsender[i+1]) or (aCntrorigin[i]>aCntrorigin[i+1]) then begin 
+      Delivdeal = aDelivdeal[i];
+      Cntrsender = aCntrsender[i];
+      Cntrorigin = aCntrorigin[i];
+      Weight = aWeight[i];
+      InvValue = aInvValue[i];
+      Sum = aSum[i];
+      
+      aDelivdeal[i] = aDelivdeal[i+1];
+      aCntrsender[i] = aCntrsender[i+1];
+      aCntrorigin[i] = aCntrorigin[i+1];
+      aWeight[i] = aWeight[i+1];
+      aInvValue[i] = aInvValue[i+1];
+      aSum[i] = aSum[i+1];
+      
+      aDelivdeal[i+1] = Delivdeal;
+      aCntrsender[i+1] = Cntrsender;
+      aCntrorigin[i+1] = Cntrorigin;
+      aWeight[i+1] = Weight;
+      aInvValue[i+1] = InvValue;
+      aSum[i+1] = Sum; 
+      
+      sort = true;
+    end;
+  end;
+  end; 
+  return;
+end;  
+
+procedure RepHeadr(record RcVc RepSpec)
+begin
+integer rw;
+string 255 tstr;
+  rw = 1;
+  HT2Per(RepSpec.sStartDate,RepSpec.sEndDate,tstr);
+  Header(rw,tstr,1);
+  rw = rw + 1;
+ return;
+end;
+
+procedure getPurchaseItem(record RcVc RepSpec, record INVc INp,var Array string delivdeal,var Array string aCntrsender, var Array string Cntrorigin,
+															   var Array val Weight, var Array val invValue, var Array val sum,var integer k)
+begin
+ record PUVc PUr;
+ row PUVc PUrw;
+ record CUVc CUr;
+ integer i,j, rwcnt;
+ val fr,to1,to2,br1,br2;
+ val tmp;
+ string 5 cntrsender;
+ boolean TrHs,foundf,addf;
+ record POVc POr;
+ record PIVc PIr;
+ string 100 ddeal,origin;
+ 
+ TrHs = true;
+  resetloop(PUr);
+ PUr.TransDate = RepSpec.sStartDate;
+
+  while (LoopKey("ArtCodeWithDate:" & INp.Code,PUr,1,TrHs)) begin
+    foundf = true;
+    if (PUr.TransDate > RepSpec.sEndDate) then begin TrHs = false; end;
+    if (TrHs) then begin
+      resetLoop(CUr);
+      CUr.Code = PUr.VECode;
+      if ReadFirstMain(CUr,1,true) then begin
+	if ((CUr.ExportFlag == 1) or (CUr.ExportFlag == 3)) then begin	  		//Pirkejais kurio korteleje 'PVM' sritis nurodyta ES
+	  cntrsender = CUr.CountryCode;			//Salis siunteja - Tiekejo korteleje esanti salis 
+	end else begin
+	  foundf = false;
+	end;
+      end else begin foundf = false; end;
+    end;
+    if (PUr.OKFlag < 1) then begin 
+      foundf = false; 
+    end;
+		
+    if (TrHs == false) then begin foundf = false; end;
+    if (foundf) then begin
+      rwcnt = MatRowCnt(PUr);
+      for (i=0;i<rwcnt;i=i+1) begin
+	MatRowGet(PUr,i,PUrw);
+	if (PUrw.ArtCode == INp.Code) then begin
+	  addf = true;
+	  for (j=0; j<k; j=j+1) begin
+	    //====================================
+    	    ddeal = "";
+    	    origin = "";
+	    POr.SerNr = PUr.PONr;
+    	    ResetLoop(POr);
+    	    if ReadFirstMain(POr,1,true) then begin
+    	      ddeal = POr.ShipDeal;
+    	    end;
+    	    if blank(ddeal) then begin
+	      ddeal = PUr.FreightCode;					//Pristatymo sal. - Frachto °mon˜ reg. GAVIMAS
+	    end;
+	    if (nonblank(PUrw.CountryOfOrg)) then begin
+	      origin = PUrw.CountryOfOrg;
+    	    end else begin
+    	      if (GetFirstPurchaseItem2(PUrw.ArtCode,PUr.Location,PUr.VECode,PIr)) then begin end;
+    	      origin = PIr.OrgCountry;
+    	    end;
+	    //======================================
+	    if (delivdeal[j] == ddeal) and (aCntrsender[j] == CUr.CountryCode) and (Cntrorigin[j] == origin) then begin
+	      if (INp.Unittext == "KG") then begin
+		Weight[j] = Weight[j] + PUrw.Quant;
+	      end else begin
+		if nonblank(INp.NetWeight) then begin 
+		  //Weight[j] = Weight[j] + PUrw.Quant * PUrw.Coefficient;
+		  Weight[j] = Weight[j] + PUrw.Quant * INp.NetWeight;
+		end else begin 
+		  Weight[j] = Weight[j] + 0;
+		end;
+							
+	      end;
+	      invValue[j] = invValue[j] + MulRateToBase1(PUr.CurncyCode,(PUrw.Quant * PUrw.UPrice),PUr.FrRate,PUr.ToRateB1,PUr.ToRateB2,PUr.BaseRate1,PUr.BaseRate2,DefaultCurRoundOff);
+	      sum[j] = sum[j] + PUrw.Quant * PUrw.CostPrice;
+	      addf = false;
+	      j = k;
+	    end;
+	  end;  //for
+	  if (addf) then begin
+	    aCntrsender[k] = cntrsender;
+    	    delivdeal[k] = "";
+    	    POr.SerNr = PUr.PONr;
+    	    ResetLoop(POr);
+    	    if ReadFirstMain(POr,1,true) then begin
+    	      delivdeal[k] = POr.ShipDeal;
+    	    end;
+    	    if blank(delivdeal[k]) then begin
+	      delivdeal[k] = PUr.FreightCode;					//Pristatymo sal. - Frachto °mon˜ reg. GAVIMAS
+	    end; //logtext(0,k & " > " & delivdeal[k] & " > " & PUr.SerNr & " > " & PUr.PONr & " > " & PUrw.ArtCode & " > " & INp.EUCodex)
+	    //delivdeal[k] = PUr.FreightCode;					//Pristatymo sal. - Frachto °mon˜ reg. GAVIMAS		
+	    //Cntrorigin[k] = PUrw.CountryOfOrg;
+	    if (nonblank(PUrw.CountryOfOrg)) then begin
+	      Cntrorigin[k] = PUrw.CountryOfOrg;
+    	    end else begin
+    	      if (GetFirstPurchaseItem2(PUrw.ArtCode,PUr.Location,PUr.VECode,PIr)) then begin end;
+    	      Cntrorigin[k] = PIr.OrgCountry;
+    	    end;
+	    if (INp.Unittext == "KG") then begin
+	      Weight[k] = PUrw.Quant;
+	    end else begin
+	      if nonblank(INp.NetWeight) then begin 
+	        //Weight[k] = PUrw.Quant * PUrw.Coefficient;
+	        Weight[k] = INp.NetWeight*PUrw.Quant;
+	      end else begin 
+		Weight[k] = 0;
+	      end;
+	    end;
+	    invValue[k] = MulRateToBase1(PUr.CurncyCode,(PUrw.Quant * PUrw.UPrice),PUr.FrRate,PUr.ToRateB1,PUr.ToRateB2,PUr.BaseRate1,PUr.BaseRate2,DefaultCurRoundOff);
+	    sum[k] = (PUrw.Quant * PUrw.CostPrice);	
+	    k=k+1;						//Baigiam paiseka
+	  end;
+	end;
+      end;//for
+    end; //foundf
+  end;
+
+ return;
+end;
+
+global 
+procedure IntrastPirkimaiRn(record RcVc RepSpec)
+begin
+ record PUVc PUr;
+ record INVc INr;
+ record CommodityVc Comr; 
+ integer i,rwcnt,k,k1;
+ boolean TrHs,TrHsMain,firstf,printf;
+ string 20 grname;
+ 
+ val groupWeight,groupInvValue,groupSum;
+ val totWeight,totInvValue,totSum;
+ 
+ Array string 5 aDelivdeal,Delivdeal;					//Pristat. salyga
+ Array string 5 aCntrsender,Cntrsender;					//Salis siunteja
+ Array string 5 aCntrorigin,Cntrorigin;					//Kilmes salis
+ Array val aWeight,Weight;
+ Array val aInvValue,InvValue;
+ Array val aSum,Sum;
+
+  StartReportJob("Stengel: Intrastat (Pirkimai)");			
+  RepHeadr(RepSpec);	 
+  EndHeader;  
+  StartFormat(15);
+  OutString(0,0,UsetStr(11588),false);				//"Prek˜s kodas"
+  OutString(65,0,UsetStr(11589),false);				//"apraäymas"
+  OutString(179,0,UsetStr(29005),false);			//"Pristatymo salygos"
+  OutString(230,0,UsetStr(29007),false);			//"áalis siunt˜ja"
+  OutString(270,0,UsetStr(29008),false);				//"Kilm˜s äalis"
+  OutString(330,0,UsetStr(14533) & ",KG",false);
+  OutString(430,0,UsetStr(29009),true);				//"Faktðros vert˜"
+  OutString(1,0,UsetStr(5564),true);				//"Suma"
+  EndFormat;
+  StartFormat(15);            
+  OutString(0,0,"",false);			//""
+  OutString(65,0,"",false);			//""
+  OutString(179,0,UsetStr(29006),false);			//"Pristatymo salygos"
+  OutString(230,0,UsetStr(29010),false);			//"áalis siunt˜ja"
+  OutString(330,0,"",false);			//""
+  OutString(65,0,"",false);			//""
+  OutString(430,0,UsetStr(29011),true);				//"Faktðros vert˜"
+  EndFormat;
+  Black_Divider(0,1);
+  StartFormat(1);	
+  Black_Divider(0,1);
+  EndFormat; 
+  TrHsMain = true;
+  Comr.ChargesCodes = "";
+  while (LoopKey("ChargesCodes",Comr,1,TrHsMain)) begin
+    TrHs = true;
+    INr.EUCodex = Comr.Number;
+    grname = Comr.ChargesCodes;
+    resetLoop(INr);
+    k1 = 0;
+    while(Loopkey("EUCodex",INr,1,TrHs)) begin 								//atrinkimas pagal EAN kodas
+      if (INr.EUCodex != Comr.Number) then begin TrHs = false; end;
+      if (TrHs) then begin
+        k=0;
+
+        getPurchaseItem(RepSpec,INr,aDelivdeal,aCntrsender,aCntrorigin,aWeight,aInvValue,aSum,k);
+        for (i=0; i<k; i=i+1) begin
+          Delivdeal[k1] = aDelivdeal[i];
+		  Cntrsender[k1] = aCntrsender[i];
+		  Cntrorigin[k1] = aCntrorigin[i];
+		  Weight[k1] = aWeight[i];
+		  InvValue[k1] = aInvValue[i];
+		  Sum[k1] = aSum[i];
+		  k1 = k1 + 1;
+        end;	
+      end;
+    end;
+    //==============================================
+    sortPurchaseItem(Delivdeal,Cntrsender,Cntrorigin,Weight,InvValue,Sum,k1);
+	for (i=0; i<k1; i=i+1) begin
+	  printf = true;
+	  StartFormat(15);
+	  OutString(0,0,Comr.DutiesCodes,false);
+	  OutString(65,0,Comr.Comment,false);
+	  OutString(179,0,Delivdeal[i],false);
+	  OutString(230,0,Cntrsender[i],false);
+	  OutString(270,0,Cntrorigin[i],false);
+	  OutVal(365,0,Weight[i],M45Val,true);
+	  OutString(430,0,InvValue[i],true);
+	  OutString(1,0,Sum[i],true);
+	  EndFormat;
+	  groupWeight = groupWeight + Weight[i];
+	  groupInvValue = groupInvValue + InvValue[i];
+	  groupSum = groupSum + Sum[i];
+	  aWeight[i] = blankval;
+	  aInvValue[i] = blankval;
+	  aSum[i] = blankval;
+	  Weight[i] = blankval;
+	  InvValue[i] = blankval;
+	  Sum[i] = blankval;
+	  if ((Delivdeal[i]!=Delivdeal[i+1]) or (Cntrsender[i]!=Cntrsender[i+1]) or (Cntrorigin[i]!=Cntrorigin[i+1])) then begin
+		if (groupWeight != 0 or groupInvValue != 0 or groupSum !=0) then begin	//Jei sumos nelygios "0", isvedinejam
+		  Black_Divider(0,1);
+			  StartFormat(15);	
+			  OutString(0,0,"",false);
+			  OutString(30, 0,UsetStr(13504) & grname,false);			//"Grupe:"
+			  OutString(179,0,"",false);
+			  OutString(230,0,"",false);
+			  OutString(280,0,"",true);
+			  OutVal(365,0,groupWeight,M45Val,true);
+			  OutString(430,0,groupInvValue,true);
+			  OutString(1,  0,groupSum,true);	  
+			  EndFormat;
+			  Black_Divider(0,1);
+			  totWeight = totWeight + groupWeight;
+			  totInvValue = totInvValue + groupInvValue;
+			  totSum = totSum + groupSum;
+			  
+			  groupWeight = 0;
+			  groupInvValue = 0;
+			  groupSum = 0;
+			  
+			  printf = false;
+			end;	  
+	  end;	  
+	end;
+	//Gray_Divider(0,1);
+    //==============================================
+    if (printf) then begin
+    if (groupWeight != 0 or groupInvValue != 0 or groupSum !=0) then begin	//Jei sumos nelygios "0", isvedinejam
+      Black_Divider(0,1);
+      StartFormat(15);	
+      OutString(0,0,"",false);
+      OutString(30, 0,UsetStr(13504) & grname,false);			//"Grupe:"
+      OutString(179,0,"",false);
+      OutString(230,0,"",false);
+      OutString(280,0,"",true);
+      OutVal(365,0,groupWeight,M45Val,true);
+      OutString(430,0,groupInvValue,true);
+      OutString(1,  0,groupSum,true);	  
+      EndFormat;
+      Black_Divider(0,1);
+      totWeight = totWeight + groupWeight;
+      totInvValue = totInvValue + groupInvValue;
+      totSum = totSum + groupSum;
+			  
+      groupWeight = 0;
+      groupInvValue = 0;
+      groupSum = 0;
+    end;
+    end;
+  end;
+	
+	//Spausdinam paskutine eilute
+  if (groupWeight != 0 or groupInvValue != 0 or groupSum !=0) then begin	//Jei sumos nelygios "0", isvedinejam
+    Black_Divider(0,1);
+    StartFormat(15);	
+    OutString(0,0,"",false);
+    OutString(30, 0,UsetStr(13504) & Comr.ChargesCodes,false);			//"Grupe:"
+    OutString(179,0,"",false);
+    OutString(230,0,"",false);
+    OutString(280,0,"",true);
+    OutVal(365,0,groupWeight,M45Val,true);
+    OutString(430,0,groupInvValue,true);
+    OutString(1,  0,groupSum,true);	  
+    EndFormat;
+    Black_Divider(0,1);
+    totWeight = totWeight + groupWeight;
+    totInvValue = totInvValue + groupInvValue;
+    totSum = totSum + groupSum;
+		  
+    groupWeight = 0;
+    groupInvValue = 0;
+    groupSum = 0;
+    grname = Comr.ChargesCodes;
+
+  end;
+	
+  StartFormat(1);	
+  Black_Divider(0,1);
+  EndFormat; 
+  StartFormat(15);														//Grupes VISO eilute
+  OutString(0,0,"",false);
+  OutString(30, 0,"",false);			//"Grupe:"
+  OutString(179,0,"",false);
+  OutString(230,0,"",false);
+  OutString(280,0,"",true);
+  OutVal(365,0,totWeight,M45Val,true);
+  OutString(430,0,totInvValue,true);
+  OutString(1,  0,totSum,true);	  
+  EndFormat; 
+  EndJob;  
+ return;
+end;
