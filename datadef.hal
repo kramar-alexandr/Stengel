@@ -1,5 +1,5 @@
 
-SOURCEFILE("halcust\\iSAF",0);
+//SOURCEFILE("halcust\\iSAF",0);//off functional // Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 January 2018 12:08:48
 
 SOURCEFILE("halcust\\Level0",0);
 SOURCEFILE("halcust\\Level0\\Documents",0);
