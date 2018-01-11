@@ -177,7 +177,7 @@ Begin
   OutString(4,"","",true);
   OutVal(colx[7],"",totpurch,M4Val,true);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 11 January 2018 11:04:40
   OutVal(colx[10],"",totdpr,M4Val,true);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 11 January 2018 11:04:41
-  OutVal(colx[10],"",totrem,M4Val,true);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 11 January 2018 11:04:29
+  OutVal(colx[11],"",totrem,M4Val,true);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 11 January 2018 11:04:29
   EndFormat;
   EndJob;
 
