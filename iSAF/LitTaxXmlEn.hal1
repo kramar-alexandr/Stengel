@@ -788,6 +788,9 @@ begin
   integer results,i,rwcnt;
   string 255 tstr;
   record PDVc PDr;
+  record STG_SettingBlock STGb;// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 24 January 2018 11:18:09
+  
+  blockload(STGb);// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 24 January 2018 11:18:09
 
   firstf = true;
   found = true;
@@ -820,19 +823,23 @@ begin
       end;
       ExportPlainXml("<isaf:Invoice>",level);
       level = level + 1;
-      if (nonblank(IVr.OfficialSerNr)) then begin
-        tstr = IVr.OfficialSerNr;
-      end else begin
-        if (nonblank(RepSpec.f4)) then begin
-          if (IVr.SerNr>0) then begin
-            tstr = RepSpec.f4 & IVr.SerNr;
-          end else begin
-            tstr = IVr.OfficialSerNr;
-          end;
-        end else begin
-          tstr = IVr.OfficialSerNr;
-        end;
-      end;
+      if(STGb.NumExport==1)then begin// Added Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 24 January 2018 11:16:25
+				tstr = RepSpec.f4 & IVr.SerNr;//ALWAYS export only what is entered in the export specification field “Serie” + “Invoice number” (SL invoice record field “No.”)
+      end else begin//Orig// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 24 January 2018 11:18:33
+				if (nonblank(IVr.OfficialSerNr)) then begin
+					tstr = IVr.OfficialSerNr;
+				end else begin
+					if (nonblank(RepSpec.f4)) then begin
+						if (IVr.SerNr>0) then begin
+							tstr = RepSpec.f4 & IVr.SerNr;
+						end else begin
+							tstr = IVr.OfficialSerNr;
+						end;
+					end else begin
+						tstr = IVr.OfficialSerNr;
+					end;
+				end;
+      end;// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 24 January 2018 11:16:28
       ExportTagXml("isaf:InvoiceNo",tstr,level);
       ExportPlainXml("<isaf:CustomerInfo>",level);
       level = level + 1;

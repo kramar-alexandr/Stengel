@@ -1,6 +1,5 @@
 
-//SOURCEFILE("halcust\\iSAF",0);//off functional // Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 January 2018 12:08:48
-
+SOURCEFILE("halcust\\iSAF",0);
 SOURCEFILE("halcust\\Level0",0);
 SOURCEFILE("halcust\\Level0\\Documents",0);
 SOURCEFILE("halcust\\Level0\\WActions",0);
@@ -25,6 +24,7 @@ begin
 
   BlockBegin(STG_SettingBlock,-,"");
   RecordField(InvWeightFlag,M4Int,0,0);
+  RecordField(NumExport,M4Int,0,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 19 January 2018 14:08:53
   EndBlock;
 
   RecordAddBegin(CommodityVc,"stg_CommodityVc");

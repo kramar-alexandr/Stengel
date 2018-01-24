@@ -6,7 +6,7 @@ begin
   SetLangMode(LangLithuanian,"LIT",2);
 
   Setting("Reikmenų kodai",CommodityLClass,modSY);
-  Setting("Stengel - Intrastat",STG_IntraStatTClass,modSY);
+  Setting("Stengel - Settings",STG_IntraStatTClass,modSY);
 
   Report("Eksporto Intrastato ataskaita - Stengel",StengelIntrasRClass,StengelIntrasRn,0,modSL);
   Report("Stengel: Intrastat (Pirkimai)",IntraPirkItaRClass,IntrastPirkimaiRn,0,modPL);

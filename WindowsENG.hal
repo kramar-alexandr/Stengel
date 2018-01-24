@@ -16,13 +16,19 @@ window STG_IntraStatTClass:1
   wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,h2,h3,v,vs;
-  WindowBegin("Stengel - Intrastat",STG_IntraStatTClass,CGSbl,-);
+  WindowBegin("Stengel - Settings",STG_IntraStatTClass,CGSbl,-);
   SetBlid(STG_SettingBlock);
   SetWRect(64,80,400,140);
-  v=30;vs = 20; h = 100;
-  ButtonFrame(h,v,123,2,"Weight from SL Invocies");
+  v=30;vs = 20; h = 30;
+  ButtonFrame(h,v,130,2,"Weight from SL Invocies");
   RadioButton(h,v,0,0,"Disable",InvWeightFlag);
   RadioButton(h,v+=16,1,0,"Enable",InvWeightFlag);
-  EndFrame;
+  
+  v=30;vs = 20; h = 180;// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 19 January 2018 14:10:51
+  ButtonFrame(h,v,160,2,"iSAF number export");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 19 January 2018 14:10:52
+  RadioButton(h,v,0,0,"With official numbers",NumExport);
+  RadioButton(h,v+=16,1,0,"Without official numbers",NumExport);
+  
+  
   EndWindow;
 end;

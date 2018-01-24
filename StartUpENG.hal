@@ -5,7 +5,7 @@ begin
   SetLangMode(LangEnglish,"ENG",2);
 
   Report("Asset balance for date",STG_AssetBalRClass,STG_AssetBalRn,0,modAT2);
-  Setting("Stengel - Intrastat",STG_IntraStatTClass,modSY);
+  Setting("Stengel - Settings",STG_IntraStatTClass,modSY);
 
   SString(1000007,"Asset balance for date");
   SString(1000008,"Asset card");
