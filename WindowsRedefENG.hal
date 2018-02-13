@@ -12,6 +12,19 @@ external inner function Boolean HasApprovals();
 external inner function Boolean IsEnterprise();
 external inner function Boolean StandardHansa();
 
+external inner function Boolean HASMODSL();
+external inner function Boolean HASMODPOS();
+external inner function Boolean HASMODSL();
+external inner function Boolean HASLANGUAGES();
+external inner function Boolean HASMODREST();
+external inner function Boolean HASADVANCEDACCOUNTING();
+external inner function Boolean HASSIMULATIONS();
+external inner function Boolean HASOBJECTS();
+external inner function Boolean HASMULTICURRENCY();
+external inner function Boolean HASMODPL();
+external inner function Boolean HASBASE2();
+external inner function Boolean HASMODNL();
+
 window IVDClass:2
   wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
@@ -829,6 +842,162 @@ begin
     end;
     SpecialMenu("Add Customer",' ',0,"AddCustomerIVDsm");
     SpecialMenu("Add Item",' ',0,"AddItemIVDsm");
+  end;
+  EndWindow;
+end;
+
+
+window MainRClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h1,h2,h3,hacc,v,vm,vm2,vs;
+  Integer tilenr;
+
+  WindowBegin("Specify #Nominal Ledger#",MainRClass,CGRcW,RcType);
+  UseView(RcVc);
+  if (IsEnterprise) then begin
+    SetWRect(20,80,600,380);
+    Tile(0,40,false,"",Period2Str);
+    h = 180; h2 = 342;
+  end else begin
+    SetWRect(20,80,400,350);
+    h = 120;
+  end;
+  vs = 20;
+  hacc = 342;
+  PeriodField(h,v=6,"Period");
+  if (IsEnterprise) then begin
+    EditFieldTL(h,v+=vs,150,"Loop 1",M4UStr,Normal,60,f4,false,AccSClass);
+    TileButtons(v,2);
+    RadioButton(h2,v,0,0,"Accounts",flags[11]);
+    tilenr = 1;
+    Tile(tilenr,340,false,tilenr,ObjStr); tilenr = tilenr + 1;
+    v = 6;
+  end else begin
+    EditFieldTL(h,v+=vs,150,"Accounts",M4UStr,Normal,60,f4,false,AccSClass);
+  end;
+  if (HasObjects) then begin
+    if (IsEnterprise) then begin
+      EditFieldTL(h,v,250,"Tag/Object",M4UStr,Normal,60 ,ObjStr,false,ObjSClass);
+    end else begin
+      EditFieldTL(h,v+=vs,150,"Tag/Object",M4UStr,Normal,60 ,ObjStr,false,ObjSClass);
+    end;
+    EditFieldTL(h,v+=vs,50,"Tag/Object Type",M4UStr,Normal,5 ,ObjType,false,OTSClass);
+  end;
+  if (IsEnterprise) then begin
+    CheckBox(350,v,0,"Including unspecified",flags[2]);
+    EditFieldTL(h,v+=vs,200,"Only with Text",M4Str,Normal,30,Stext,false,0);
+  end else begin
+    EditFieldTL(h,v+=vs,150,"Only with Text",M4Str,Normal,30,Stext,false,0);
+  end;
+  if (HasModSL or HasModPOS or HasModPL or HasModRest) then begin
+    EditFieldTL(h,v+=vs,50,"#VAT# Code",M4Code,Normal,10,f1,false,VATCodeSClass);
+  end;
+  if (HasLanguages) then begin
+    EditFieldTL(h,v+=vs,50,"Language",M4UStr,Normal,5,Language,false,LangSClass);
+  end;
+  if (HasMultiCurrency) then begin
+    EditFieldTL(h,v+=vs,50,"Currency",M4UStr,Normal,5,CurncyCode,false,CurncyCodeSClass);
+  end;
+  if (IsEnterprise) then begin
+    EditFieldTL(h,v+=vs,30,"Recon. Code",M4UStr,Normal,5,f2,false,ReconCodeSClass);
+    CheckBox(220,v,0,"Exclude with Code",flags[25]);
+    if (StandardHansa==false) then begin
+      EditFieldTL(h,v+=vs,250,"Reference",M4Str,Normal,60,LastAcc,false,0);
+    end;
+  end;
+  if (HasObjects) then begin
+    EditFieldTL(h,v+=vs,80,"Exclude Tag/Object",M4UStr,Normal,60,f3,false,ObjSClass);
+  end;
+  if (IsEnterprise) then begin
+    h1 = 15; h2 = 230; h3 = 395;
+  end else begin
+    h1 = 30; h2 = h1; h3 = 180;
+  end;
+  if (IsEnterprise) then begin
+    CheckBox(h1,vm=(v+=40),0,"Used Accounts only",UsedOnly);
+    CheckBox(h1,v+=16,0,"Show References",flags[10]);
+  end else begin
+    ButtonFrame(h2,vm=(v+=40),123,2,"Sorting");
+    RadioButton(h2,v,0,0,"Date and Type",flags[28]);
+    RadioButton(h2,v+=16,1,0,"Order of Entry",flags[28]);
+    CheckBox(h1,v+=56,0,"Used Accounts only",UsedOnly);
+  end;
+  CheckBox(h1,v+=16,0,"With _Corrections",flags[1]);
+  CheckBox(h1,vm2=(v+=16),0,"Subtotal #VAT# Codes",flags[5]);
+  if (IsEnterprise) then begin
+    CheckBox(h1,v+=16,0,"Subtotal #VAT# Codes, per Account",flags[27]);
+  end;
+  CheckBox(h1,v+=16,0,"List Transaction No.",flags[4]); v = v + 16;
+  if (IsEnterprise) then begin
+    CheckBox(h1,v,0,"Don't print Transaction Prefix",flags[23]); v = v + 16;
+  end;
+  if (HasMultiCurrency) then begin
+    CheckBox(h1,v,0,"Show Cu_rrencies",flags[8]); v = v + 16;
+  end;
+  if (HasBase2) then begin
+    CheckBox(h1,v,0,"Corresponding _Accounts",flags[3]); v = v + 16;
+    CheckBox(h1,v,0,"Show Base Currency 2 Differences only",flags[24]);v = v + 16;
+  end;
+	CheckBox(h1,v,0,"Show comment from purchase operation",flags[29]);v = v + 16;// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 15:51:55
+  if (IsEnterprise) then begin
+    ButtonFrame(h2,v=vm,123,2,"Sorting");
+    RadioButton(h2,v,0,0,"Date and Type",flags[28]);
+    RadioButton(h2,v+=16,1,0,"Order of Entry",flags[28]);
+  end;
+  if (IsEnterprise) then begin
+    CheckBox(h2,v=vm2,0,"_Balances only",ArtMode);
+    CheckBox(h2,v+=16,0,"Show _Object",flags[6]);
+  end else begin
+    CheckBox(h1,v,0,"_Balances only",ArtMode); v = v + 16;
+    CheckBox(h1,v,0,"Show zeroes instead of blank strings",flags[20]); v = v + 16;
+    if (HasObjects) then begin
+      CheckBox(h1,v,0,"Show _Object",flags[6]); v = v + 16;
+    end;
+    h2 = h1;
+  end;
+  if (HasAdvancedAccounting) then begin
+    CheckBox(h2,v+=16,0,"Not Reconciled",flags[21]);
+    CheckBox(h2,v+=16,0,"Reconciled",flags[22]);
+  end;
+  ButtonFrame(h3,v=(vm),170,3,"Long Lines");
+  RadioButton(h3,v,0,0,"Don't Break",flags[7]);
+  RadioButton(h3,v+=16,1,0,"Break",flags[7]);
+  RadioButton(h3,v+=16,2,0,"Cut",flags[7]);
+  if (IsEnterprise) then begin
+    ButtonFrame(h3,v+=40,170,3,"Function");
+    RadioButton(h3,v,0,0,"Show all Transactions",flags[26]);
+    RadioButton(h3,v+=16,1,0,"Show Trans. w/o Doc. No.",flags[26]);
+    RadioButton(h3,v+=16,2,0,"Show Trans. with Doc. No.",flags[26]);
+    Tile(tilenr,340,false,tilenr,f5); tilenr = tilenr + 1;
+    v = 6; h2 = 330;
+    EditFieldTL(h,v,140,"Loop 2",M4UStr,Normal,60,f5,false,AccSClass);
+    RadioButton(hacc,v,1,0,"Accounts",flags[11]);
+    EditFieldTL(h,v+=vs,140,"Loop 3",M4UStr,Normal,60,f6,false,AccSClass);
+    RadioButton(hacc,v,2,0,"Accounts",flags[11]);
+  end;
+  if (HasSimulations and HasModNL) then begin
+    h3 = 100;
+    if (!IsEnterprise) then begin h3 = 180; end;
+    ButtonFrame(h3,vm=(v+=45),170,4,"Include Simulations");
+    RadioButton(h3,v,0,0,"None",SimVerf);
+    RadioButton(h3,v+=16,1,0,"All",SimVerf);
+    RadioButton(h3,v+=16,2,0,"Year End Stage 1",SimVerf);
+    RadioButton(h3,v+=16,3,0,"Year End Stage 1 and 2",SimVerf);
+  end;
+  if (IsEnterprise) then begin
+    CheckBox(h3,v+=24,0,"Show zeroes instead of blank strings",flags[20]);
+  end;
+  if (HasBase2) then begin
+    if (IsEnterprise) then begin
+      h3 = 300;
+      ButtonFrame(h3,v=vm,140,2,"Values in");
+    end else begin
+      h3 = 180;
+      ButtonFrame(h3,v+=40,170,2,"Values in");
+    end;
+    RadioButton(h3,v,0,0,"Base Currency 1",basecurncy);
+    RadioButton(h3,v+=16,1,0,"Base Currency 2",basecurncy);
   end;
   EndWindow;
 end;
