@@ -37,6 +37,12 @@ external inner function Boolean HASMULTICURRENCY();
 external inner function Boolean HASMODPL();
 external inner function Boolean HASBASE2();
 external inner function Boolean HASMODNL();
+external inner function Boolean HASCATEGORIES();
+external inner function Boolean HASSALESMANBONUS();
+external inner function Boolean HASSALESMAN();
+external inner function Boolean HASAGED();
+external inner function Boolean HASPREPAYMENTS();
+external inner function Boolean HASCONTACTCLASSIFICATION();
 
 SetLangMode(LangLithuanian,"LIT",2);
 
@@ -1213,5 +1219,165 @@ begin
   RadioButton(h3,v,0,0,"Bazine valiuta 1",basecurncy);
   RadioButton(h3,v+=16,1,0,"Bazine valiuta 2",basecurncy);
 end;
+  EndWindow;
+end;
+
+window APRClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,v3,vm,vs;
+  WindowBegin("Pirkimų knyga",APRClass,CGRcW,RcType);
+  if (IsEnterprise) then begin
+  SetWRect(20,80,527,360);
+  Tile(0,25,false,"",f1);
+  EditFieldTL(h=150,v=10, 150,"Tiekėjas",   M4UStr,Normal,30,f1,false,VESClass);
+  TileButtons(v,2);
+  Tile(1,340,false,"1",f4);
+  v = 6;
+  if (HasCategories) then begin
+    EditFieldTL(h,v, 50, "Kategorija",   M4UStr,Normal,5,f3,false,VGSClass);
+  end;
+  if (HasContactClassification) then begin
+    EditFieldTL(h,v+=20,250,"Klasė",M4UStr,Normal,60,f4,false,CClassSClass);
+    EditFieldTL(h,vm=(v+=20) ,70,"Klasių tipas",M4UStr,Normal,30,f5,false,CTypeSClass);
+  end;
+    if (HasSalesman or HasSalesmanBonus) then begin
+    EditFieldTL(h,v+=20 ,70,"Pardavėjas",M4UStr,Normal,10,AccStr,false,UserSClass);
+  end;
+  if (HasSalesGroup) then begin
+    EditFieldTL(h,v+=20 ,50,"Pard. grupė",M4UStr,Normal,10,f2,false,SalesGroupSClass);
+  end;
+  if (HasObjects) then begin
+    EditFieldTL(h,v+=20 ,150,"Objektai",M4UStr,Normal,60,ObjStr,false,ObjSClass);
+  end;
+  if (HasMultiCurrency or HasBase2) then begin
+    EditFieldTL(h,v+=20, 50, "Valiuta",M4UStr,Normal,5,CurncyCode,false,CurncyCodeSClass);
+  end;
+  EditFieldTL(h,v+=20, 70, "Data",   M4Date,Normal,0,d1,false,PasteCurDate);
+  EditFieldTL(h,v3=(v+=20), 50, "Krerditorių sąsk.",   M4UStr,Normal,10,FirstAcc,false,AccSClass);
+  ButtonFrame(h=340,v=vm+20,123,7,"Funkcija");
+  RadioButton(h,v,0,0,"Detaliai",ArtMode);
+  RadioButton(h,v+=16,1,0,"Peržiūra",ArtMode);
+  RadioButton(h,v+=16,2,0,"Laikotarpiais",ArtMode);
+  RadioButton(h,v+=16,5,0,"Detaliai laikotarpiais",ArtMode);
+  RadioButton(h,v+=16,3,0,"Likučiai",ArtMode);
+  if (HasMultiCurrency or HasBase2) then begin
+    RadioButton(h,v+=16,4,0,"Kursų skirtumai",ArtMode);
+    RadioButton(h,v+=16,6,0,"Kursų skirt. detaliai",ArtMode);
+  end;
+  EndFrame;
+  if (HasMultiCurrency or HasBase2) then begin
+    if (StandardHansa==false) then begin
+      ButtonFrame(h=20,v=(vm=(v3+=42)),123,2,"Sumos");
+    end else begin
+      ButtonFrame(h=20,v=(vm=(v3+=62)),123,2,"Sumos"); 
+    end;
+    if (HasBase2) then begin
+      RadioButton(h,v,0,0,"Bazine valiuta 1",flags[2]);
+    end else begin
+      RadioButton(h,v,0,0,"Bazine valiuta",flags[2]); 
+    end;
+    RadioButton(h,v+=16,1,0,"Valiuta",flags[2]);
+      EndFrame;
+    end;
+	ButtonFrame(h,v+=40,123,2,"Rūšiavimas");
+	RadioButton(h,v,0,0,"Tiekėjo kodas",flags[1]);
+	RadioButton(h,v+=16,1,0,"Tiekėjo pavadinimas",flags[1]);
+	ButtonFrame(h+=148,v=vm,140,4,"Avansai");
+	RadioButton(h,v,0,0,"Įtraukti",flags[21]);
+	RadioButton(h,v+=16,1,0,"Tik avansus",flags[21]);
+	RadioButton(h,v+=16,2,0,"Praleisti avansus",flags[21]);
+	CheckBox(h,v+=18,0,"Rodyti išanks. nr.",flags[13]);
+  ButtonFrame(h+=168,v=vm,123,2,"Būklė");
+  RadioButton(h,v,0,0,"Išrašytos",flags[0]);
+  RadioButton(h,v+=16,2,0,"Uždelstos",flags[0]);
+	ButtonFrame(h,v+=40,123,2,"Įtraukti");
+	RadioButton(h,v,0,0,"Faktūros data",flags[5]);
+	RadioButton(h,v+=16,1,0,"Nuolaidos data",flags[5]);
+  Tile(2,280,false,"2",Language);
+  v = 6; h=150;
+  EditFieldTL(h,v, 82, "Mok. term. dienos",M4Str,Normal,10,f6,false,0); 
+  if (HasLanguages) then begin
+    EditFieldTL(h,v+=20, 82, "Kalba",M4UStr,Normal,5,Language,false,LangSClass);
+  end;
+  CheckBox(h,v+=24,0,"Įtraukti preliminarias",flags[3]);
+  CheckBox(h,v+=16,0,"Atmesti Užsakytus mokėjimus (tik su nurodyta data)",flags[14]);
+  if (HasBase2) then begin
+    CheckBox(h,v+=16,0,"Rodyti Viso 2-a bazine val.",flags[12]);
+  end;
+	CheckBox(h,v+=16,0,"Rodyti kreditorių sąskaitas",flags[18]);
+	if (StandardHansa==false) then begin
+		CheckBox(h,v+=16,0,"Rodyti įmokas",flags[19]);
+	end;
+	CheckBox(h,v+=16,0,"Praleisti sulaikytas",flags[23]);
+	CheckBox(h,v+=16,0,"Įtraukti D/K faktūras į atgalinės datos ataskaitą",flags[24]);
+	CheckBox(h,v+=16,0,"Rodyti banko sąskaitą",flags[25]);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:37:45
+	
+	ButtonFrame(h,v+=40,123,3,"Pagal datą"); 
+	RadioButton(h,v,0,0,"Apmokėti iki",flags[22]); 
+	RadioButton(h,v+=16,1,0,"Faktūros data",flags[22]); 
+	RadioButton(h,v+=16,2,0,"Operacijos data",flags[22]); 
+  /*
+  ButtonFrame(h,v +=40,123,2,"Įtraukti");
+  RadioButton(h,v,0,0,"Be išankstinio mok.",flags[4]);
+  RadioButton(h,v+=16,1,0,"Su išankstiniu mok.",flags[4]);
+  */
+  end else begin
+    SetWRect(20,80,400,300);
+    vs = 20;
+    EditFieldTL(h=120,v=6,150,"Tiekėjas",   M4UStr,Normal,30,f1,false,VESClass); 
+    if (HasCategories) then begin
+      EditFieldTL(h,v+=20, 50,"Kategorija",   M4UStr,Normal,5,f3,false,VGSClass);
+    end;
+    if (HasObjects) then begin
+      EditFieldTL(h,v+=20 ,150,"Objektai",M4UStr,Normal,60,ObjStr,false,ObjSClass);
+    end;
+    if (HasMultiCurrency or HasBase2) then begin
+      EditFieldTL(h,v+=20, 50, "Valiuta",M4UStr,Normal,5,CurncyCode,false,CurncyCodeSClass);
+    end;
+    if (HasContactClassification) then begin
+      EditFieldTL(h,v+=vs,250,"Klasė",M4UStr,Normal,60,f4,false,CClassSClass);
+    end;
+    EditFieldTL(h,v+=vs, 82,"Data",   M4Date,Normal,0,d1,false,PasteCurDate); 
+    if (HasLanguages) then begin
+      EditFieldTL(h,v+=vs,30,"Kalba",M4UStr,Normal,5,Language,false,LangSClass); 
+    end;
+    ButtonFrame(h = 30,vm=(v+=40),123,3,"Funkcijos");  
+    RadioButton(h,v,0,0,"Detaliai",ArtMode);
+    RadioButton(h,v+=16,1,0,"Peržiūra",ArtMode);
+    if (HasAged) then begin
+      RadioButton(h,v+=16,2,0,"Laikotarpiais",ArtMode);
+    end;
+    RadioButton(h,v+=16,3,0,"Likučiai",ArtMode);
+    if (HasAged) then begin
+      RadioButton(h,v+=16,4,0,"Detailed Aged",ArtMode);
+    end;
+    EndFrame;
+    if (HasMultiCurrency or HasBase2) then begin
+      ButtonFrame(h,v+=40,123,2,"Sumos"); 
+      if (HasBase2) then begin
+      RadioButton(h,v,0,0,"Baz. val. 1",flags[2]); 
+      end else begin
+        RadioButton(h,v,0,0,"Baz. val.",flags[2]); 
+      end;
+      RadioButton(h,v+=16,1,0,"Valiuta",flags[2]); 
+      if (HasBase2) then begin
+        CheckBox(h,v+=32,0,"Rodyti Baz. val. 2 sumas",flags[12]); 
+      end;
+    end;
+    if (HasPrepayments) then begin
+      if (HasMultiCurrency or HasBase2) then begin 
+        CheckBox(h,v+=16,0,"Rodyti išankstinio mokėjimo Nr.",flags[13]);
+      end else begin
+        CheckBox(h,v+=32,0,"Rodyti išankstinio mokėjimo Nr.",flags[13]);
+      end;
+    end;
+		ButtonFrame(h+=148,v = vm,170,2,"Būklė");
+		RadioButton(h,v,0,0,"Neapmokėtos",flags[0]);
+		RadioButton(h,v+=16,2,0,"Uždelstos",flags[0]);
+		ButtonFrame(h,v+=56,170,2,"Rūšiavimas");
+		RadioButton(h,v,0,0,"Tiek. nr.",flags[1]);
+		RadioButton(h,v+=16,1,0,"Pavadinimas",flags[1]); v = v + 30;
+  end;
   EndWindow;
 end;
