@@ -1311,7 +1311,8 @@ begin
 	end;
 	CheckBox(h,v+=16,0,"Praleisti sulaikytas",flags[23]);
 	CheckBox(h,v+=16,0,"Įtraukti D/K faktūras į atgalinės datos ataskaitą",flags[24]);
-	CheckBox(h,v+=16,0,"Rodyti banko sąskaitą",flags[25]);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:37:45
+	CheckBox(h,v+=16,0,"Rodyti banko sąskaitą (tik su funkcija „Peržiūra“)",flags[25]);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:37:45
+	CheckBox(h,v+=16,0,"Rodyti tiekėją kiekvienoje eilutėje (tik su funkcija „Peržiūra“)",flags[26]);
 	
 	ButtonFrame(h,v+=40,123,3,"Pagal datą"); 
 	RadioButton(h,v,0,0,"Apmokėti iki",flags[22]); 
