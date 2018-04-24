@@ -764,6 +764,7 @@ begin
     OutString(105,0,USetStr(12008),false);
     OutString(150,0,USetStr(17404),false);
     OutString(190,0,USetStr(17403),false);
+    OutString(240,0,USetStr(5018),false);//5018 Edit ************************** BPI Ukraine - KramarAlexandr - 04, 01 03 2018 y. 15:47:11
     OutString(280,0,USetStr(17514),true);
     OutString(330,0,USetStr(1000003),true);
     OutString(380,0,USetStr(17607),true);
@@ -1530,6 +1531,7 @@ LkInvoiceTypeCredit1:;
               OutString(105,0,IVr.Addr0,false);
               OutString(150,0,IVrw.ArtCode,false);
               OutString(190,0,IVrw.Spec,false);
+              OutString(240,0,IVrw.SerialNr,false);// Edit ************************** BPI Ukraine - KramarAlexandr - 04, 01 03 2018 y. 15:48:35
               OutVal(280,0,IVrw.Quant,M4UVal,true);
               OutVal(330,0,IVrw.Price,M423Val,true);
               OutString(380,0,IVr.CurncyCode,true);

@@ -1098,7 +1098,8 @@ begin
     end;
     CheckBox(h,v+=16,0,"Skip on Hold",flags[23]);
     CheckBox(h,v+=16,0,"Include N/L Invoices in backdated Report",flags[24]);
-    CheckBox(h,v+=16,0,"Show bank account",flags[25]);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:01:35
+    CheckBox(h,v+=16,0,"Show bank account (only for Overview)",flags[25]);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:01:35
+    CheckBox(h,v+=16,0,"Show supplier in each row (only for Overview)",flags[26]);// Edit ************************** BPI Ukraine - KramarAlexandr - 04, 01 03 2018 y. 15:23:23
     ButtonFrame(h,v+=40,123,3,"Aged Base");
     RadioButton(h,v,0,0,"Due Date",flags[22]);
     RadioButton(h,v+=16,1,0,"Invoice Date",flags[22]);

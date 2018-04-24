@@ -240,7 +240,9 @@ BEGIN
     EndFormat; 
     StartFormat(15);
      OutString(20,0,USetStr(4043),false);
-     OutString(60,0,USetStr(4042),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:22:37
+     if(RepSpec.flags[26]==1)then begin
+			 OutString(60,0,USetStr(4042),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:22:37
+     end;
      if (RepSpec.flags[5]==0) then begin
        OutString(150,0,USetStr(4003),false);
      end else begin
@@ -249,7 +251,7 @@ BEGIN
      OutString(230,0,USetStr(4044),false);
      if(RepSpec.flags[25]==1)then begin
 			OutString(270,0,USetStr(1000021),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:00:20
-		end;
+		 end;
      OutString(345,0,USetStr(4045),true);
      OutString(450,0,USetStr(4046),true);
     EndFormat;
@@ -848,7 +850,9 @@ begin
   end;
   StartFormat(15);
   OutStringID(20,dblstr,tstr,false,tstr2);
-  OutString(60,"",VIr.VEName,false);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:17:25
+  if(RepSpec.flags[26]==1)then begin
+  	OutString(60,"",VIr.VEName,false);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 14:17:25
+  end;
   if (RepSpec.flags[5]==0) then begin
     OutDate(150,0,VIr.InvDate,false);
   end else begin
