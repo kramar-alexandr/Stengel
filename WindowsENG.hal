@@ -24,10 +24,10 @@ begin
   RadioButton(h,v,0,0,"Disable",InvWeightFlag);
   RadioButton(h,v+=16,1,0,"Enable",InvWeightFlag);
   
-  v=30;vs = 20; h = 180;// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 19 January 2018 14:10:51
+  /*v=30;vs = 20; h = 180;// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 19 January 2018 14:10:51
   ButtonFrame(h,v,160,2,"iSAF number export");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 19 January 2018 14:10:52
   RadioButton(h,v,0,0,"With official numbers",NumExport);
-  RadioButton(h,v+=16,1,0,"Without official numbers",NumExport);
+  RadioButton(h,v+=16,1,0,"Without official numbers",NumExport);*/
   
   
   EndWindow;
