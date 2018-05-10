@@ -6,6 +6,8 @@ begin
 
   Report("Asset balance for date",STG_AssetBalRClass,STG_AssetBalRn,0,modAT2);
   Setting("Stengel - Settings",STG_IntraStatTClass,modSY);
+	Import("SwedBank import Statement",SwedBankImportSTIClass,SwedBankImportSTIn,modSL);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:20:27
+	Setting("SwedBank import Statement",SwedbankImportLClass,modSL);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:20:33
 
   SString(1000007,"Asset balance for date");
   SString(1000008,"Asset card");

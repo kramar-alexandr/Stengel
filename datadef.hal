@@ -18,6 +18,7 @@ SOURCEFILE("halcust\\RActions",3);
 SOURCEFILE("halcust\\Tools",3);
 SOURCEFILE("halcust\\WActions",3);
 SOURCEFILE("halcust\\Windows",3);
+SourceFile("halcust\\Swedbank",3);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:21:33
 SOURCEFILE("halcust\\",3);
 
 begin
@@ -79,6 +80,39 @@ begin
   RecordAddBegin(ItemStatusVc,"stg_itemstat");
     ChangeField(Code,M4Code,40,INVc);
   EndRecordAdd;
-
+	
+	RecordBegin(SwedbankImportVc,-,"");// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:16:13
+		RecordField(NtryRef,M4Code,50,0);
+		RecordField(OwnID,M4Code,50,0);
+		RecordField(BankID,M4Code,50,0);
+		RecordField(BookgDt,M4Date,0,0);
+		RecordField(CdtDbtInd,M4Code,10,0);
+		RecordField(AmtCcy,M45Val,0,0);
+		RecordField(RvslInd,M4Int,0,0);
+		RecordField(CurncyCode,M4Code,20,0);
+		RecordField(IBAN,M4Code,50,0);
+		RecordField(Ustrd,M4Str,250,0);
+		RecordField(IPNr,M4Long,0,0);
+		RecordField(RecName,M4Str,255,0);
+		
+		MainKeyBegin(NtryRef,0);
+  	KeySegment(NtryRef);
+  	KeySegment(BankID);
+  	KeySegment(OwnID);
+  	
+  	KeyBegin(BookgDt);
+  	KeySegment(BookgDt);
+  	KeySegment(NtryRef);
+  	KeySegment(BankID);
+  	KeySegment(OwnID);
+  	
+  	KeyBegin(CdtDbtInd);
+  	KeySegment(CdtDbtInd);
+  	KeySegment(NtryRef);
+  	KeySegment(BankID);
+  	KeySegment(OwnID);
+  	
+	EndRecord;
+	
   return;
 end;
