@@ -98,7 +98,7 @@ begin
 end;
 
 window SwedBankImportSTIClass:1// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:19:29
-  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real f,h,v,vm,vs;
 
