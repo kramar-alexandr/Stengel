@@ -1,0 +1,15 @@
+// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 14 May 2018 16:55:32
+global
+updating function LongInt VIVcRecordCheck(record VIVc VIp,record VIVc VI2p,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+	
+	if(nonblank(VIp.InvoiceNr))then begin
+		VIp.InvoiceNr = trim(VIp.InvoiceNr);
+	end;
+
+  res = inner.VIVcRecordCheck(VIp,VI2p,stat,long4);
+LVIVcRecordCheck:;
+  VIVcRecordCheck = res;
+  return;
+end;
