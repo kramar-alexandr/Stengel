@@ -143,7 +143,7 @@ BEGIN
         end;    
       end;
       OutString(6,0,USetStr(3186),false);
-      if(RepSpec.flags[29]==1)then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:48:24
+      if(RepSpec.wholemonthf==1)then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:48:24
 				OutString(220,0,USetStr(3506),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:48:22
       end;
       
@@ -588,7 +588,7 @@ BEGIN
           OutStringOvst(6,0,Left(tstr,16),false,ovst);//-248
         end;  
       end;
-      if(RepSpec.flags[29]==1 and nonblank(commentstr))then begin
+      if(RepSpec.wholemonthf==1 and nonblank(commentstr))then begin
 				OutString(220,0,commentstr,false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:25:44
       end;
       OutValOvstBiDi(3,0,dv,M4Val,true,ovst,364);
