@@ -462,13 +462,21 @@ BEGIN
   
    StartFormat(15);
     if (RepSpec.flags[23]!=0) then begin
+    	if (RepSpec.Media==mtFile or RepSpec.Media==mtExcel) then begin
+    		OutString(220,0,"",false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:15:44
+    	end;
       if (IVr.DisputedFlag==1) then begin 
         OutStringID(15,"DblIVVc",IVr.OfficialSerNr & "(*)",false,IVr.SerNr);
       end else begin 
         OutStringID(15,"DblIVVc",IVr.OfficialSerNr,false,IVr.SerNr);
       end;  
+      tstr = CreateInvoiceNumberDisputedMark(IVr.SerNr,IVr.OfficialSerNr,IVr.DisputedFlag);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:13:17
+      OutStringID(90,dblstr,tstr,false,tstr2);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:13:19
 //      OutString(100,"DblAR",IVr.SerNr,false);
     end else begin
+    	if (RepSpec.Media==mtFile or RepSpec.Media==mtExcel) then begin
+    		OutString(220,0,"",false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:15:44
+    	end;
       tstr = CreateInvoiceNumberDisputedMark(IVr.SerNr,IVr.OfficialSerNr,IVr.DisputedFlag);
       OutStringID(90,dblstr,tstr,false,tstr2);
     end;
@@ -1168,12 +1176,23 @@ BEGIN
      OutString(0,0,USetStr(2426),false);
      if (RepSpec.flags[23]!=0) then begin
 //       OutString(100,0,USetStr(2423),false);
+				OutString(15,0,USetStr(1000022),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:12:26
+				OutString(90,0,USetStr(2423),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:12:22
      end else begin
        OutString(90,0,USetStr(2423),false);
      end;
      OutString(160,0,USetStr(2707),false);
+     
+			 if (RepSpec.Media==mtFile or RepSpec.Media==mtExcel) then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:31:15
+				OutString(170,0,"",false);
+			 end;
+     
      OutString(240,0,USetStr(2422),false);
      OutString(345,0,USetStr(2428),true);
+		 if (RepSpec.Media==mtFile or RepSpec.Media==mtExcel) then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 29 May 2018 17:31:15
+			OutString(170,0,"",false);
+		 end;
+
 //     if (lightFlag==false) then begin
 //       OutString(350,0,USetStr(2711),true);
 //     end;  

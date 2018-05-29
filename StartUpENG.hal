@@ -24,6 +24,7 @@ begin
   SString(1000019,"Liquidation Value");
   SString(1000020,"Depr. Start .date");
   SString(1000021,"Bank Account");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:05:16
+  SString(1000022,"Official No.");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:05:26
 
   return;
 end;

@@ -56,6 +56,7 @@ begin
   SString(1000019,"Likvidacinnė vertė");
   SString(1000020,"Nusidėv. Pradž. Data");
   SString(1000021,"Banko sąskaita");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:05:26
+  SString(1000022,"Oficialus Nr.");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 23 February 2018 17:05:26
 
   return;
 end;

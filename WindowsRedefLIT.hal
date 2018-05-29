@@ -1159,7 +1159,7 @@ begin
     CheckBox(h1,v,0,"Koresponduojančios sąskaitos",flags[3]); v = v + 16;
     CheckBox(h1,v,0,"Rodyti tik baz. val. 2 skirtumus",flags[24]); v = v + 16;
   end;
-  CheckBox(h1,v,0,"Rodyti komentarą iš pirkimo operacijos",wholemonthf);v = v + 16;// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 15:51:11
+  CheckBox(h1,v,0,"Rodyti komentarą iš pirkimo operacijos",CorrM);v = v + 16;// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 15:51:11
   if (IsEnterprise) then begin
     ButtonFrame(h2,v=vm,123,2,"Rūšiavimas");
     RadioButton(h2,v,0,0,"Data ir tipas",flags[28]);

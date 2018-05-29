@@ -945,7 +945,7 @@ begin
     CheckBox(h1,v,0,"Corresponding _Accounts",flags[3]); v = v + 16;
     CheckBox(h1,v,0,"Show Base Currency 2 Differences only",flags[24]);v = v + 16;
   end;
-	CheckBox(h1,v,0,"Show comment from purchase operation",wholemonthf);v = v + 16;// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 15:51:55
+	CheckBox(h1,v,0,"Show comment from purchase operation",CorrM);v = v + 16;// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 15:51:55
   if (IsEnterprise) then begin
     ButtonFrame(h2,v=vm,123,2,"Sorting");
     RadioButton(h2,v,0,0,"Date and Type",flags[28]);

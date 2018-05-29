@@ -132,6 +132,7 @@ BEGIN
       OutString(0,0,USetStr(3183),false);
       OutString(2,0,USetStr(3184),false);
       if (RepSpec.Media==mtFile) or (RepSpec.Media==mtExcel) then begin
+      	OutString(6,0,"",false);// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 23 May 2018 16:04:26
         if (RepSpec.flags[6]!=0) or (nonblank(RepSpec.ObjType)) then begin
           OutString(6,0,USetStr(3185),false);
         end;
@@ -143,7 +144,7 @@ BEGIN
         end;    
       end;
       OutString(6,0,USetStr(3186),false);
-      if(RepSpec.wholemonthf==1)then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:48:24
+      if(RepSpec.CorrM==1)then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:48:24
 				OutString(220,0,USetStr(3506),false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:48:22
       end;
       
@@ -588,8 +589,15 @@ BEGIN
           OutStringOvst(6,0,Left(tstr,16),false,ovst);//-248
         end;  
       end;
-      if(RepSpec.wholemonthf==1 and nonblank(commentstr))then begin
-				OutString(220,0,commentstr,false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:25:44
+      if(RepSpec.CorrM==1)then begin
+      	IF(nonblank(commentstr))THEN BEGIN
+					OutString(220,0,commentstr,false);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 13 February 2018 16:25:44
+      	END ELSE BEGIN
+      		OutString(220,0,"",false);// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 23 May 2018 16:13:29
+      	END;
+      end;
+      if (RepSpec.Media==mtFile) or (RepSpec.Media==mtExcel) then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 23 May 2018 16:07:50
+        OutString(220,0,"",false);
       end;
       OutValOvstBiDi(3,0,dv,M4Val,true,ovst,364);
       OutValOvstBiDi(4,0,cv,M4Val,true,ovst,434);
