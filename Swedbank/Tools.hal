@@ -1,0 +1,290 @@
+external inner function Boolean IPVc_PasteCustCode(var record IPVc,Integer,var LongInt);
+external inner procedure ExtractObj(string,var Integer,var string);
+external inner function Boolean PasteInvIn2IPr(var record IPVc,Integer,Date,var val,Boolean,var Boolean);
+external inner procedure IPVc_PasteRecCurncy(var record IPVc,Integer);
+external inner procedure IPVc_PasteRecVal(var record IPVc,Integer);
+external inner procedure IPVc_PasteBankCurncy(var record IPVc,Integer);
+external inner function Boolean PasteInvIn2OPr(var record OPVc,Integer,Date,Integer,val,var string,Boolean,var Boolean);
+external inner procedure OPVc_PasteBankCurncy(var record OPVc,Integer);
+external inner procedure OPVc_PasteRecVal(var record OPVc,Integer);
+external inner procedure OPVc_PasteVECode(var record OPVc,Integer);
+
+
+global function string 255 BPI_ParseInvStr(string Ustrd)
+begin
+	integer i;
+	string 255 instr,c;
+	
+	For(i=0;i<len(Ustrd);i=i+1) begin
+		c = mid(Ustrd,i,1);
+		if(asc(c)>47 and asc(c)<58)then begin
+			instr = instr & c;
+		end;
+		if(c=="-")then begin
+			instr = instr & c;
+		end;
+		if(c=="/")then begin
+			instr = instr & c;
+		end;
+		if(c>="A" and c<="Z")then begin
+			instr = instr & c;
+		end;
+		
+		if(c=="," or c=="." or c==" " or c==";")then begin
+			instr = instr & ",";
+		end;
+	end; 
+	if(len(instr)>1)then begin
+		For(i=0;i<len(instr)-1;i=i+1) begin
+			c = mid(instr,i,2);
+			if(c==",,")then begin
+				instr = left(instr,i) & right(instr,len(instr)-i-1);
+				i=i-1;
+			end;
+		end;
+	end;
+	if(left(instr,1)==",")then begin
+		instr = right(instr,len(instr)-1);
+	end;
+	if(right(instr,1)==",")then begin
+		instr = left(instr,len(instr)-1);
+	end;
+	
+	logtext(0,"BPI_ParseInvStr instr " & Ustrd & " outstr " & instr);
+	
+	BPI_ParseInvStr = instr;
+return;
+end;
+
+global procedure FindCustomerByIBAN(string IBAN, string OrgId, var string cucode,var boolean cufnd)
+begin
+	boolean TrHs;
+	record LetVc Letr;
+	record CUVc CUr;
+	
+	TrHs = true;
+	if(nonblank(IBAN) or nonblank(OrgId))then begin
+		while(loopmain(CUr,1,TrHs))begin
+			if(CUr.CUType==1 and TrHs)then begin
+				if(nonblank(IBAN))then begin
+					if(CUr.IBANCode==IBAN or CUr.BankAccount==IBAN or CUr.Bank==IBAN)then begin
+						TrHs = false;
+						cufnd = true;
+						cucode = CUr.Code;
+					end;
+				end;
+				if(nonblank(OrgId) and OrgId==CUr.RegNr1)then begin
+					TrHs = false;
+					cufnd = true;
+					cucode = CUr.Code;
+				end;
+			
+				RecordClear(Letr);
+				AddToText(CUr.InvAddr0 & ";",Letr);
+				AddToText(CUr.InvAddr1 & ";",Letr);
+				AddToText(CUr.InvAddr2 & ";",Letr);
+				AddToText(CUr.InvAddr3 & ";",Letr);
+				AddToText(CUr.InvAddr4 & ";",Letr);
+			
+				if(StringInText(IBAN,Letr))then begin
+					TrHs = false;
+					cufnd = true;
+					cucode = CUr.Code;
+				end;
+			
+			end;
+		end;
+	end;
+	
+return;
+end;
+
+
+
+global procedure BankFillIProws(var record IPVc IPr,var integer k,string RecName,string CurncyCode,var val remsum,string cucode,boolean cufnd,string instr)
+begin
+	row IPVc IPrw;
+	boolean installmentf;
+	val chk;
+	record ARVc ARr;
+	boolean TrHs;
+	record CUVc CUr;
+	LongInt error;
+	
+	if(nonblank(cucode))then begin
+		ARr.CustCode = cucode;
+		TrHs = true;
+		while(loopkey("CustCode",ARr,1,TrHs))begin
+			if(ARr.CustCode!=cucode)then begin TrHs = false; end;
+									
+			if(TrHs)then begin
+				if(remsum>0)then begin
+					if(setinset(ARr.InvoiceNr,instr))then begin
+						clearrow(IPr,IPrw,1);
+						IPrw.InvoiceNr = ARr.InvoiceNr;
+						matrowput(IPr,k,IPrw);
+						PasteInvIn2IPr(IPr,k,IPr.TransDate,chk,false,installmentf);
+						matrowget(IPr,k,IPrw);
+						IPrw.CustName = RecName;
+						IPrw.RecCurncy = CurncyCode;
+						matrowput(IPr,k,IPrw);
+						IPVc_PasteBankCurncy(IPr,k);
+						matrowget(IPr,k,IPrw);
+						if(IPrw.BankVal>=remsum)then begin
+							IPrw.BankVal = remsum;
+							IPrw.RecVal = remsum;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = 0;
+						end;
+						if(IPrw.RecVal<remsum)then begin
+							IPrw.BankVal = IPrw.RecVal;
+							IPrw.RecVal = IPrw.RecVal;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = remsum - IPrw.RecVal;
+						end;
+						k=k+1;
+	
+					end;
+					if(setinset(ARr.OfficialSerNr,instr) and nonblank(ARr.OfficialSerNr))then begin
+						clearrow(IPr,IPrw,1);
+						IPrw.InvoiceNr = ARr.InvoiceNr;
+						matrowput(IPr,k,IPrw);
+						PasteInvIn2IPr(IPr,k,IPr.TransDate,chk,false,installmentf);
+						matrowget(IPr,k,IPrw);
+						IPrw.CustName = RecName;
+						IPrw.RecCurncy = CurncyCode;
+						matrowput(IPr,k,IPrw);
+						IPVc_PasteBankCurncy(IPr,k);
+						matrowget(IPr,k,IPrw);
+						if(IPrw.BankVal>=remsum)then begin
+							IPrw.BankVal = remsum;
+							IPrw.RecVal = remsum;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = 0;
+						end;
+						if(IPrw.RecVal<remsum)then begin
+							IPrw.BankVal = IPrw.RecVal;
+							IPrw.RecVal = IPrw.RecVal;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = remsum - IPrw.RecVal;
+						end;
+						k=k+1;
+	
+					end;
+				end;
+			end;
+		end;
+		resetloop(ARr);
+	end else begin
+		TrHs = true;
+		ARr.CustCode = "";
+		while(loopkey("CustCode",ARr,1,TrHs))begin												
+			if(TrHs)then begin
+				if(remsum>0)then begin
+					if(setinset(ARr.InvoiceNr,instr))then begin
+						clearrow(IPr,IPrw,1);
+						IPrw.InvoiceNr = ARr.InvoiceNr;
+						matrowput(IPr,k,IPrw);
+						PasteInvIn2IPr(IPr,k,IPr.TransDate,chk,false,installmentf);
+						matrowget(IPr,k,IPrw);
+						IPrw.CustName = RecName;
+						IPrw.RecCurncy = CurncyCode;
+						matrowput(IPr,k,IPrw);
+						IPVc_PasteBankCurncy(IPr,k);
+						matrowget(IPr,k,IPrw);
+						if(IPrw.BankVal>=remsum)then begin
+							IPrw.BankVal = remsum;
+							IPrw.RecVal = remsum;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = 0;
+						end;
+						if(IPrw.RecVal<remsum)then begin
+							IPrw.BankVal = IPrw.RecVal;
+							IPrw.RecVal = IPrw.RecVal;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = remsum - IPrw.RecVal;
+						end;
+						k=k+1;	
+					end;
+					if(setinset(ARr.OfficialSerNr,instr) and nonblank(ARr.OfficialSerNr))then begin
+						clearrow(IPr,IPrw,1);
+						IPrw.InvoiceNr = ARr.InvoiceNr;
+						matrowput(IPr,k,IPrw);
+						PasteInvIn2IPr(IPr,k,IPr.TransDate,chk,false,installmentf);
+						matrowget(IPr,k,IPrw);
+						IPrw.CustName = RecName;
+						IPrw.RecCurncy = CurncyCode;
+						matrowput(IPr,k,IPrw);
+						IPVc_PasteBankCurncy(IPr,k);
+						matrowget(IPr,k,IPrw);
+						if(IPrw.BankVal>=remsum)then begin
+							IPrw.BankVal = remsum;
+							IPrw.RecVal = remsum;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = 0;
+						end;
+						if(IPrw.RecVal<remsum)then begin
+							IPrw.BankVal = IPrw.RecVal;
+							IPrw.RecVal = IPrw.RecVal;
+							matrowput(IPr,k,IPrw);
+							IPVc_PasteRecVal(IPr,k);
+							matrowget(IPr,k,IPrw);
+							remsum = remsum - IPrw.RecVal;
+						end;
+						k=k+1;
+					end;
+				end;
+			end;
+		end;
+		resetloop(ARr);
+	end;
+
+	if(remsum>0)then begin
+		if(cufnd)then begin
+			clearrow(IPr,IPrw,1);
+			CUr.Code = cucode;
+			readfirstmain(CUr,1,true);
+			clearrow(IPr,IPrw,1);
+			IPrw.CustCode = CUr.Code;
+			matrowput(IPr,k,IPrw);
+			IPVc_PasteCustCode(IPr,0,error);
+			matrowget(IPr,k,IPrw);
+			IPrw.RecCurncy = CurncyCode;
+			matrowput(IPr,k,IPrw);
+			IPVc_PasteBankCurncy(IPr,k);
+			matrowget(IPr,k,IPrw);
+			IPrw.RecVal = remsum;
+			IPrw.BankVal = remsum;
+			IPrw.CustName = RecName;
+			matrowput(IPr,k,IPrw);
+			IPVc_PasteRecVal(IPr,k);
+		end else begin
+			clearrow(IPr,IPrw,1);
+			IPrw.BankCurncy = CurncyCode;
+			matrowput(IPr,k,IPrw);
+			IPVc_PasteBankCurncy(IPr,k);
+			matrowget(IPr,k,IPrw);
+			IPrw.BankVal = remsum;
+			IPrw.RecVal = remsum;
+			IPrw.CustName = RecName;
+			matrowput(IPr,k,IPrw);
+			IPVc_PasteRecVal(IPr,k);
+		end;
+	end;
+	
+return;
+end;

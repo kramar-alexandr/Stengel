@@ -94,6 +94,9 @@ begin
 		RecordField(Ustrd,M4Str,250,0);
 		RecordField(IPNr,M4Long,0,0);
 		RecordField(RecName,M4Str,255,0);
+		RecordField(OrgId,M4Code,50,0);
+		RecordField(PrvtId,M4Code,50,0);
+		RecordField(PayType,M4Str,50,0);
 		
 		MainKeyBegin(NtryRef,0);
   	KeySegment(NtryRef);
