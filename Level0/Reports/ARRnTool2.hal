@@ -497,7 +497,9 @@ BEGIN
     end else begin      
       OutStringID(345,tstr,latedays,true,IVr.SerNr);
     end;
-    OutLongInt(360,0,IVr.LastRemndr,true);
+    if(RepSpec.flags[25]==0)then begin
+			OutLongInt(370,0,IVr.LastRemndr,false);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 20 July 2018 11:20:17
+    end;
     if (RepSpec.flags[2]==1) then begin
       OutValBiDi(450,0,rval,M4Val,true,490);
       OutString(480,0,IVr.CurncyCode,true);
@@ -1196,7 +1198,9 @@ BEGIN
 //     if (lightFlag==false) then begin
 //       OutString(350,0,USetStr(2711),true);
 //     end;  
-     OutString(450,0,USetStr(2434),true);
+		if(RepSpec.flags[25]==0)then begin// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 20 July 2018 11:36:51
+     	OutString(370,0,USetStr(2434),false);
+    end;
     EndFormat;       
   end;
   if ((RepSpec.ArtMode==2) or (RepSpec.ArtMode==5)) then begin

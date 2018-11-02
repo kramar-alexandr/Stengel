@@ -1,3 +1,4 @@
+//<halrule>server-only</halrule>
 remote inner function Boolean IPVc_PasteCustCode(var record IPVc,Integer,var LongInt);
 external inner procedure ExtractObj(string,var Integer,var string);
 remote inner function Boolean PasteInvIn2IPr(var record IPVc,Integer,Date,var val,Boolean,var Boolean);
@@ -5,8 +6,8 @@ remote inner procedure IPVc_PasteRecCurncy(var record IPVc,Integer);
 remote inner procedure IPVc_PasteRecVal(var record IPVc,Integer);
 remote inner procedure IPVc_PasteBankCurncy(var record IPVc,Integer);
 external function string 255 BPI_ParseInvStr(string);
-external procedure FindCustomerByIBAN(string,string,var string,var boolean);
-external procedure BankFillIProws(var record IPVc,var integer,string,string,var val,string,boolean,string);
+external procedure FindCustomerByIBAN(string,string,var string,var boolean,string);
+external procedure BankFillIProws(var record IPVc,var integer,string,string,var val,string,boolean,string,string);
 
 global updating procedure SwedBankImportSTIn()
 begin
@@ -150,9 +151,9 @@ begin
 			IPr.SerNr = NextSerNr("IPVc",IPr.TransDate,-1,false,"");		
 			CUr.Code = "";
 			
-			FindCustomerByIBAN(SWIr.IBAN,SWIr.OrgId,cucode,cufnd);
+			FindCustomerByIBAN(SWIr.IBAN,SWIr.OrgId,cucode,cufnd,SWIr.RecName);
 			instr = BPI_ParseInvStr(SWIr.Ustrd);
-			BankFillIProws(IPr,k,SWIr.RecName,SWIr.CurncyCode,remsum,cucode,cufnd,instr);
+			BankFillIProws(IPr,k,SWIr.RecName,SWIr.CurncyCode,remsum,cucode,cufnd,instr,SWIr.Ustrd);
 			if(recordstore(IPr,true))begin
 				SWIr.IPNr = IPr.SerNr;
 			end;

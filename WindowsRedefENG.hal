@@ -30,6 +30,9 @@ external inner function Boolean HASSALESMAN();
 external inner function Boolean HASAGED();
 external inner function Boolean HASPREPAYMENTS();
 external inner function Boolean HASCONTACTCLASSIFICATION();
+external inner function Boolean HasOfficialSerNr();
+external inner function Boolean HasInvoiceOfficialSerNr();
+external inner function Boolean HasModCO();
 
 window IVDClass:2
   wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
@@ -1165,6 +1168,189 @@ begin
     ButtonFrame(h,v+=56,170,2,"Sorting");
     RadioButton(h,v,0,0,"#Supplier# No.",flags[1]);
     RadioButton(h,v+=16,1,0,"Name",flags[1]); v = v + 30;
+  end;
+  EndWindow;
+end;
+
+
+window ARRClass:2
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,v3,vm,vs;
+  WindowBegin("Specify #Sales Ledger#",ARRClass,CGRcW,RcType);
+  if (IsEnterprise) then begin
+    SetWRect(20,80,532,360);
+    Tile(0,20,false,"",f1);
+    EditFieldTL(h=150,v=6, 150,"Customer",   M4UStr,Normal,30,f1,false,CUSClass);
+    TileButtons(v,2);
+    Tile(1,340,false,"1",f3);
+    v = 6; vm = v; vs = 20;
+    if (HasCategories) then begin
+      EditFieldTL(h,v, 70, "Category",   M4UStr,Normal,5,f3,false,CCatSClass);
+      v = v + 20;
+    end;
+    if (HasContactClassification) then begin
+      EditFieldTL(h,v,70,"Classification",M4UStr,Normal,30,f4,false,CClassSClass);
+      v = v + 20;
+      EditFieldTL(h,v,70,"Classification Types",M4UStr,Normal,60,f5,false,CTypeSClass);
+      v = v + 20;
+    end;
+    if (HasSalesman or HasSalesmanBonus) then begin
+      EditFieldTL(h,v, 70, "#Salesman#",   M4UStr,Normal,10,f2,false,UserSClass);
+      v = v + 20;
+    end;
+    if (HasSalesGroup) then begin
+      EditFieldTL(h,v ,50,"Sales Group",M4UStr,Normal,10,TransStr,false,SalesGroupSClass);
+      v = v + 20;
+    end;
+    if (HasObjects) then begin
+      EditFieldTL(h,v, 150, "Tags/Objects",M4UStr,Normal,60,ObjStr,false,ObjSClass);
+      v = v + 20;
+      EditFieldTL(h,v, 70, "Tag/Object Type",M4UStr,Normal,5,ObjType,false,OTSClass);
+      v = v + 20;
+    end;
+    if (HasMultiCurrency or HasBase2) then begin
+      EditFieldTL(h,v, 70, "Currency",M4UStr,Normal,5,CurncyCode,false,CurncyCodeSClass);
+    end;
+    EditFieldTL(h,v+=20, 70, "Due more than",   M4Long,Normal,0,long1,false,0);
+    EditFieldTL(h,v+=20, 70, "Date",   M4Date,Normal,0,d1,false,PasteCurDate);
+    EditFieldTL(h,v3=(v+=20), 70, "Debtors A/C",   M4UStr,Normal,10,AccStr,false,AccSClass);
+    if (HasMultiCurrency or HasBase2) then begin
+      ButtonFrame(h=20,v=(vm=(v3+=42)),123,2,"Amounts");
+      RadioButton(h,v,0,0,"Base Currency 1",flags[2]);
+      RadioButton(h,v+=16,1,0,"Currency",flags[2]);
+    end;
+    ButtonFrame(h,v+=45,123,2,"Sorting");
+    RadioButton(h,v,0,0,"Customer C_ode",flags[1]);
+    RadioButton(h,v+=16,1,0,"Customer Name",flags[1]);
+    ButtonFrame(h+=148,v=vm,140,4,"On Account");
+    RadioButton(h,v,0,0,"Include On Account",flags[21]);
+    RadioButton(h,v+=16,1,0,"Only On Account",flags[21]);
+    RadioButton(h,v+=16,2,0,"Skip On Account",flags[21]);
+    CheckBox(h,v+=18,0,"Show Prepayment No.",flags[20]);
+/*    
+    ButtonFrame(h,v+=40,140,2,"Invoice Sorting");
+    RadioButton(h,v,0,0,"Customer C_ode",flags[22]);
+    RadioButton(h,v+=16,1,0,"Invoice Date",flags[22]);
+*/    
+    ButtonFrame(h+=168,v=90,123,7,"Function");
+    RadioButton(h,v,0,0,"Detailed",ArtMode);
+    RadioButton(h,v+=16,1,0,"Overview",ArtMode);
+    if (HasAged) then begin
+      RadioButton(h,v+=16,2,0,"Aged",ArtMode);
+      RadioButton(h,v+=16,5,0,"Detailed Aged",ArtMode);
+    end;
+    RadioButton(h,v+=16,3,0,"Balance",ArtMode);
+    RadioButton(h,v+=16,4,0,"Rate Differences",ArtMode);
+    RadioButton(h,v+=16,6,0,"Rate Diff. Detailed",ArtMode);
+    ButtonFrame(h,v=vm,123,2,"Status");
+    RadioButton(h,v,0,0,"Op_en",flags[0]);
+    RadioButton(h,v+=16,2,0,"Overdue",flags[0]);
+    ButtonFrame(h,v+=40,123,3,"Disputed");
+    RadioButton(h,v,0,0,"Include Disputed",flags[3]);
+    RadioButton(h,v+=16,1,0,"Exclude Disputed",flags[3]);
+    RadioButton(h,v+=16,2,0,"Only Disputed",flags[3]);
+    Tile(2,320,false,"2",Language);
+    v = 6;h=150;
+    EditFieldTL(h,v, 80, "Language",M4UStr,Normal,5,Language,false,LangSClass);
+    EditFieldTL(h,v+=20, 80, "Main Partner",M4UStr,Normal,20,f9,false,CUSClass);
+
+    EditFieldTL(h,v+=vs, 80, "Amount from",M4Val,Normal,0,vals0,true,0);
+    StaticText(h+94,v+13,"to",false);
+    EditFieldTL(h+120,v, 80, "",M4Val,Normal,0,vals1,true,0);
+
+    CheckBox(h,v+=30,0,"Show Base Currency 2 Totals",flags[12]);
+    CheckBox(h,v+=16,0,"Only Interest Invoices",flags[13]);
+    CheckBox(h,v+=16,0,"Show Invoice Comment",flags[14]);
+    if (HasOfficialSerNr or HasInvoiceOfficialSerNr) then begin
+      CheckBox(h,v+=16,0,"Show Official Ser. No.",flags[23]);
+    end;
+    CheckBox(h,v+=16,0,"Show Debtor Accounts",flags[18]);
+    if (StandardHansa==false) then begin
+      CheckBox(h,v+=16,0,"Show #Instalments#",flags[19]);
+    end;
+    CheckBox(h,v+=16,0,"Aged based on Invoice Date",flags[22]);
+    CheckBox(h,v+=16,0,"Skip No Reminder",flags[16]);
+    if (StandardHansa==false) then begin
+      CheckBox(h,v+=16,0,"Skip No Collection",flags[17]);
+    end;
+    CheckBox(h,v+=16,0,"Exclude reminder level",flags[25]);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 20 July 2018 11:21:42
+
+  end else begin
+    SetWRect(20,80,400,300);
+    EditFieldTL(h=120,v=6, 150,"Customer",   M4UStr,Normal,30,f1,false,CUSClass);
+    if (HasCategories) then begin
+      EditFieldTL(h,v+=20, 50, "Category",   M4UStr,Normal,5,f3,false,CCatSClass);
+    end;
+    if (HasObjects) then begin
+      EditFieldTL(h,v+=20, 150, "Tags/Objects",M4UStr,Normal,60,ObjStr,false,ObjSClass);
+      EditFieldTL(h,v+=20, 50, "Tag/Object Type",M4UStr,Normal,5,ObjType,false,OTSClass);
+    end;
+    if (HasMultiCurrency or HasBase2) then begin
+      EditFieldTL(h,v+=20, 50, "Currency",M4UStr,Normal,5,CurncyCode,false,CurncyCodeSClass);
+    end;
+    if (HasContactClassification) then begin
+      EditFieldTL(h,v+=20 ,70,"Classification",M4UStr,Normal,30,f4,false,CClassSClass);
+    end;
+    EditFieldTL(h,v+=20, 82, "Date",   M4Date,Normal,0,d1,false,PasteCurDate);
+    if (HasLanguages) then begin
+      EditFieldTL(h,v+=20,30,"Language",M4UStr,Normal,5,Language,false,LangSClass);
+    end;
+    if (HasModCO) then begin
+      ButtonFrame(h = 30,vm=(v+=40),123,5,"Function");
+      RadioButton(h,v,0,0,"History",ArtMode);
+      RadioButton(h,v+=16,1,0,"Overview",ArtMode);
+      if (HasAged) then begin
+        RadioButton(h,v+=16,2,0,"Aged",ArtMode);
+        RadioButton(h,v+=16,4,0,"Detailed Aged",ArtMode);
+      end;
+      RadioButton(h,v+=16,3,0,"Balance",ArtMode);
+    end else begin
+      ButtonFrame(h = 30,vm=(v+=40),123,3,"Function");
+      RadioButton(h,v,0,0,"History",ArtMode);
+      RadioButton(h,v+=16,1,0,"Overview",ArtMode);
+      if (HasAged) then begin
+        RadioButton(h,v+=16,2,0,"Aged",ArtMode);
+      end;
+      RadioButton(h,v+=16,3,0,"Balance",ArtMode);
+      if (HasAged) then begin
+        RadioButton(h,v+=16,4,0,"Detailed Aged",ArtMode);
+      end;
+    end;
+    if (HasMultiCurrency or HasBase2) then begin
+      ButtonFrame(h,v+=40,123,2,"Amounts");
+      if (HasBase2) then begin
+        RadioButton(h,v,0,0,"Base Currency 1",flags[2]);
+      end else begin
+        RadioButton(h,v,0,0,"Base Currency",flags[2]);
+      end;
+      RadioButton(h,v+=16,1,0,"Currency",flags[2]);
+      if (HasBase2) then begin
+        CheckBox(h,v+=32,0,"Show Base Currency 2 Totals",flags[12]);
+      end;
+    end;
+
+    if (HasPrepayments) then begin 
+      if (HasMultiCurrency or HasBase2) then begin 
+        CheckBox(h,v+=16,0,"Show Prepayment No.",flags[20]);
+      end else begin
+        CheckBox(h,v+=32,0,"Show Prepayment No.",flags[20]);
+      end;
+    end;
+        
+    if (HasOfficialSerNr) then begin
+      CheckBox(h,v+=16,0,"Show Official Ser. No.",flags[23]); v = v + 16;
+    end;
+    if (HasLocalization("PRT")) then begin
+      CheckBox(h,v,0,"Show Debtor Accounts",flags[18]); v = v + 16;
+    end;
+    ButtonFrame(h+=165,v = vm,153,2,"Status");
+    RadioButton(h,v,0,0,"Open",flags[0]);
+    RadioButton(h,v+=16,2,0,"Due",flags[0]);
+    ButtonFrame(h,v+=56,153,2,"Sorting");
+    RadioButton(h,v,0,0,"N_o.",flags[1]);
+    RadioButton(h,v+=16,1,0,"Name",flags[1]);
+    
   end;
   EndWindow;
 end;

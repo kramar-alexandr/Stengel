@@ -164,3 +164,21 @@ begin
   EndWindow;
   
 end;  
+
+window BankImportSetTClass:1// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 28 August 2018 14:39:06
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vm,vs;
+  v = 6; vs = 20; h = 90;
+
+  WindowBegin("Stengel - Banking Statement Import settings",BankImportSetTClass,CGSbl,-);
+  SetWRect(20,80,400,480);
+  SetBlid(BankImportSetBlock);
+  Sizeable(-1,-1,0,0);
+  	v=v+20;
+		ButtonFrame(h,v=v+20,210,2,"Import is done by connecting");
+		RadioButton(h,v,0,0,"The oldest invoices (FIFO method)",InvFIFO);
+		RadioButton(h,v+=16,1,0,"The oldest due dates",InvFIFO);
+  EndWindow;
+
+end;

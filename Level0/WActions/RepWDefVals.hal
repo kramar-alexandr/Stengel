@@ -1,0 +1,23 @@
+external function Boolean IsEnterprise();
+external function Boolean HasLocalMachines();
+external procedure In2Period(var string,var Date,var Date);
+external function Boolean UserHasLimitedAccess(var string,var string);
+
+global
+procedure ARRClassReportDefaults(Integer wn)
+begin
+  record RcVc RepSpec;
+  string 255 tstr;
+  
+  DeselectWindow(wn,false);
+  GetWindowRecord(wn,RepSpec);
+  ReportDefaults(RepSpec,"ARRClass");  
+  RepSpec.ArtMode = 1;
+  RepSpec.flags[1] = 1;
+  RepSpec.flags[25] = 1;
+  if (UserHasLimitedAccess(RepSpec.f2,RepSpec.TransStr)) then begin
+  end;
+  PutWindowRecord(wn,RepSpec);
+  SelectWindow(wn);
+  return;
+end;

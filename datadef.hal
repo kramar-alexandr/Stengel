@@ -117,5 +117,17 @@ begin
   	
 	EndRecord;
 	
+	BlockBegin(BankImportSetBlock,-,"");// Edit ************************** BPI Ukraine - KramarAlexandr - Wednesday, 13 June 2018 10:12:18
+		RecordField(ImpPaym,M4Int,0,0);
+		RecordField(ImpPaymOrd,M4Int,0,0);
+		RecordField(ImpCharges,M4Int,0,0);
+		RecordField(DefPayModeSW,M4Code,5,0);
+		RecordField(DefPayModeSEB,M4Code,5,0);
+		RecordField(DefPayModeLUM,M4Code,5,0);
+		RecordField(DefPayModeSIA,M4Code,5,0);
+		RecordField(DefSearchInv,M4Int,0,0);
+		RecordField(InvFIFO,M4Int,0,0);
+	EndBlock;
+	
   return;
 end;

@@ -8,6 +8,7 @@ begin
   Setting("Stengel - Settings",STG_IntraStatTClass,modSY);
 	Import("SwedBank import Statement",SwedBankImportSTIClass,SwedBankImportSTIn,modSL);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:20:27
 	Setting("SwedBank import Statement",SwedbankImportLClass,modSL);// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 10 May 2018 16:20:33
+  Setting("Stengel - Banking Statement Import settings",BankImportSetTClass,modSL);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 October 2018 15:59:21
 
   SString(1000007,"Asset balance for date");
   SString(1000008,"Asset card");
