@@ -1,3 +1,4 @@
+external function Boolean SetInSet2(string,string);
 external procedure HTItem(string,var string);
 external procedure HTArtGroup(string, var string);
 external procedure HTItemClass(string,var string);
@@ -372,7 +373,7 @@ begin
           if (Locr.Group!=RepSpec.f5) then begin testf = false; end;
         end;
         if (nonblank(RepSpec.f6)) then begin
-          if (SetInSet(RepSpec.f6,Locr.Classification)==false) then begin testf = false; end;
+          if (SetInSet2(RepSpec.f6,Locr.Classification)==false) then begin testf = false; end;
         end;
       end;
     end;

@@ -600,8 +600,18 @@ LBankExpLithuaniaSEPA_Domestic_SKIPROW1:;
       if (nonblank(VEr.InvAddr1) and nonblank(VEr.InvAddr2)) then begin
         ExportPlainXml("<PstlAdr>",3);
         ExportTagXml("Ctry",country,4);
-        ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr1,false),4);  
-        ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr2,false),4);  
+        if (nonblank(VEr.InvAddr0)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr0,false),4);  
+        end;
+        if (nonblank(VEr.InvAddr1)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr1,false),4);  
+        end;
+        if (nonblank(VEr.InvAddr2)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr2,false),4);  
+        end;
+        if (nonblank(VEr.InvAddr3)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr3,false),4);  
+        end;
         ExportPlainXml("</PstlAdr>",3);
       end;
       ExportPlainXml("</Cdtr>",2);
@@ -737,8 +747,18 @@ LBankExpLithuaniaSEPA_Domestic_SKIPROW1:;
       if(nonblank(VEr.InvAddr1) and nonblank(VEr.InvAddr2)) then begin
         ExportPlainXml("<PstlAdr>",3);
         ExportTagXml("Ctry",country,4);
-        ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr1,false),4);  
-        ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr2,false),4);  
+        if (nonblank(VEr.InvAddr0)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr0,false),4);  
+        end;
+        if (nonblank(VEr.InvAddr1)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr1,false),4);  
+        end;
+        if (nonblank(VEr.InvAddr2)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr2,false),4);  
+        end;
+        if (nonblank(VEr.InvAddr3)) then begin
+          ExportTagXml("AdrLine",ConvertXmlString(VEr.InvAddr3,false),4);  
+        end;
         ExportPlainXml("</PstlAdr>",3);
       end;
       ExportPlainXml("</Cdtr>",2);

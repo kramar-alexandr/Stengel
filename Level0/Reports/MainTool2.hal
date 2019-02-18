@@ -1,3 +1,4 @@
+external function val Budg1Calc2(string,string,string,string,Date,Date,Integer,Integer,Integer);
 external procedure MulM4OneRate(val,val,var val,roundmode,Boolean);
 external procedure GetConsolidationRate(string,string,Date,var val,var val,var val,var val,var val);
 external procedure AddCurncyTotals(var array string,var array val,var Integer,string,val);
@@ -276,6 +277,7 @@ BEGIN
   string 255 tstr,tstr2;
   row AccVc Accrw;
   Integer i,rwcnt;
+  val budv;
 
   if (printf) then begin
   if (RepSpec.ArtMode==0) then begin
@@ -301,6 +303,14 @@ LMainL:;
       tstr = tstr & Accp.Comment;
     end;
     OutString(0,0,tstr,false);
+    if (RepSpec.sflags[0]!=0) then begin
+      OutString(380,0,USetStr(3161),false);    
+      budv = Budg1Calc2(Accp.AccNumber,RepSpec.ObjStr,RepSpec.CurncyCode,"",RepSpec.sStartDate,RepSpec.sEndDate,RepSpec.basecurncy,RepSpec.IncDaughter,0);
+      if (nonblank(RepSpec.f3)) then begin
+        budv = budv - Budg1Calc2(Accp.AccNumber,RepSpec.f3,RepSpec.CurncyCode,"",RepSpec.sStartDate,RepSpec.sEndDate,RepSpec.basecurncy,RepSpec.IncDaughter,0);
+      end;
+      OutVal(1,0,budv,M4Val,true);
+    end;    
     EndFormat;
   end;
   end;
@@ -1085,7 +1095,7 @@ procedure ReadSMRow(record RcVc RepSpec,record SMVc SMp,string objstr,Date dtp,v
                     var array string acur,var array val av1,var array val av2,var array val av3,var Integer curcnt)
 BEGIN
   row SMVc SMrw;
-  Integer i,rwcnt;
+  Integer i,rwcnt,simstat;
   string 255 tstr;
   string 255 objs;
   string 255 corspaccs;
@@ -1097,6 +1107,8 @@ BEGIN
   rwcnt = MatRowCnt(SMp);
   for (i = 0 ; i<rwcnt; i=i+1) begin
     MatRowGet(SMp,i,SMrw);
+    simstat = SMrw.RowSimStat;
+    if (simstat==kSimulationRowTypeDefault) then begin simstat = SMp.SimStat; end;
     if (SMrw.AccNumber==Accp.AccNumber) then begin
       testf = true;
       if (nonblankdate(SMrw.TransDate)) then begin
@@ -1105,7 +1117,7 @@ BEGIN
         if (dtp!=SMp.TransDate) then begin testf = false; end;
       end;      
       if (testf) then begin
-        if (IncludeSim(SMrw.RowSimStat,simf)) then begin
+        if (IncludeSim(simstat,simf)) then begin
           corspaccs = "";
           dcflag = true;
           if (SMrw.DebVal==blankv) then begin dcflag = false; end;

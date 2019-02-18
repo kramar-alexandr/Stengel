@@ -1,3 +1,4 @@
+external function Boolean SetInSet2(string,string);
 external procedure FindAllPrepayLosses(string,Date,val,LongInt,val,var val,record IVVc,LongInt,LongInt,Boolean,record BaseCurBlock,val,string);
 external function val MulWithRateToBase1(var string,Date,val,roundmode);
 external procedure SumAged(Date,Integer,Integer,var val,var val,var val,var val,var val,var val,var val,var val,var val,var val);
@@ -1352,7 +1353,7 @@ BEGIN
                       testf = ObjectTypeMatch(IPrw.Objects,RepSpec.ObjType);
                     end;
                     if (nonblank(RepSpec.ObjStr)) then begin
-                      testf = SetInSet(RepSpec.ObjStr,IPrw.Objects);
+                      testf = SetInSet2(RepSpec.ObjStr,IPrw.Objects);
                     end;
                   end;
                 end;
@@ -1375,7 +1376,7 @@ BEGIN
                         testf = ObjectTypeMatch(CLInr.Objects,RepSpec.ObjType);
                       end;
                       if (nonblank(RepSpec.ObjStr)) then begin
-                        testf = SetInSet(RepSpec.ObjStr,CLInr.Objects);
+                        testf = SetInSet2(RepSpec.ObjStr,CLInr.Objects);
                       end;
                       i = rwcnt;
                     end;
@@ -1401,7 +1402,7 @@ BEGIN
                         testf = ObjectTypeMatch(CLOutr.Objects,RepSpec.ObjType);
                       end;
                       if (nonblank(RepSpec.ObjStr)) then begin
-                        testf = SetInSet(RepSpec.ObjStr,CLOutr.Objects);
+                        testf = SetInSet2(RepSpec.ObjStr,CLOutr.Objects);
                       end;
                       i = rwcnt;
                     end;
@@ -1842,6 +1843,7 @@ procedure PrintARAged(record RcVc RepSpec,val ssact,val ss0,val ss1,val ss2,val 
                       val ssactb2,val ss0b2,val ss1b2,val ss2b2,val ss3b2,val ss4b2,val ss5b2,val ss6b2,val ss7b2,val totb2)
 begin
   val sssum,blval;
+  val psact,ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7,paonacc;
   
   StartFormat(15);
   if (RepSpec.Media==mtFile or RepSpec.Media==mtExcel) then begin
@@ -1865,7 +1867,19 @@ begin
   end;
   OutString(100,0,USetStr(2539),false);
   sssum = ssact + ss0 + ss1 + ss2 + ss3 + ss4 + ss5 + ss6 + ss7 + onacc; // + onaccsum
-  PrintAgedLine(100*ssact/tot,100*ss0/tot,100*ss1/tot,100*ss2/tot,100*ss3/tot,100*ss4/tot,100*ss5/tot,100*ss6/tot,100*ss7/tot,100*onacc/tot,100*sssum/tot,nrofper,480,"")
+  psact = 100*ssact/tot; ps0 = 100*(ss0+onacc)/tot; ps1 = 100*ss1/tot; ps2 = 100*ss2/tot; ps3 = 100*ss3/tot; 
+  ps4 = 100*ss4/tot; ps5 = 100*ss5/tot; ps6 = 100*ss6/tot; ps7 = 100*ss7/tot; paonacc = 100*onacc/tot;
+  if (psact>100) then begin psact = 100; end; if (psact<0) then begin psact = 0; end;
+  if (ps0>100) then begin ps0 = 100; end; if (ps0<0) then begin ps0 = 0; end;
+  if (ps1>100) then begin ps1 = 100; end; if (ps1<0) then begin ps1 = 0; end;
+  if (ps2>100) then begin ps2 = 100; end; if (ps2<0) then begin ps2 = 0; end;
+  if (ps3>100) then begin ps3 = 100; end; if (ps3<0) then begin ps3 = 0; end;
+  if (ps4>100) then begin ps4 = 100; end; if (ps4<0) then begin ps4 = 0; end;
+  if (ps5>100) then begin ps5 = 100; end; if (ps5<0) then begin ps5 = 0; end;
+  if (ps6>100) then begin ps6 = 100; end; if (ps6<0) then begin ps6 = 0; end;
+  if (ps7>100) then begin ps7 = 100; end; if (ps7<0) then begin ps7 = 0; end;
+  if (paonacc>100) then begin paonacc = 100; end; if (paonacc<0) then begin paonacc = 0; end;
+  PrintAgedLine(psact,ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7,paonacc,100*sssum/tot,nrofper,480,"")
   EndFormat;
   StartFormat(10);
   EndFormat;

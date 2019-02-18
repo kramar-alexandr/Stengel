@@ -1,3 +1,4 @@
+external function Boolean SetInSet2(string,string);
 external procedure ARPrintDueDetailedInstalmenInvoice(record IVVc,record RcVc,record CUVc,Integer,Integer);
 external procedure FindInstalmentInvoiceBalance(record RcVc,record IVVc,Date,var val,var val);
 external function LongInt CalculateLateDaysInstallmentInv(LongInt,Date,Date,Date,Boolean);
@@ -159,6 +160,8 @@ BEGIN
     RecordNew(CurTotalsr);
     RecordNew(OnAccCurTotalsr);
   end;
+  ss[0] = blankval; ss[1] = blankval; ss[2] = blankval; ss[3] = blankval; ss[4] = blankval; ss[5] = blankval; ss[6] = blankval; ss[7] = blankval; ss[8] = blankval;
+  ssb2[0] = blankval; ssb2[1] = blankval; ssb2[2] = blankval; ssb2[3] = blankval; ssb2[4] = blankval; ssb2[5] = blankval; ssb2[6] = blankval; ssb2[7] = blankval; ssb2[8] = blankval;
   
   invindex = "CustInv";
 /*  
@@ -202,6 +205,7 @@ BEGIN
 L22:;
   onecurncyf = true;
   lastcurncycode = "";
+  
   
   if (CUs==false) then begin goto L88; end;
 //    CUs = m4_ReadLogicalCKey(CUVc,ckey,LLoop2++,&CUr);
@@ -279,6 +283,10 @@ L22:;
   end else begin
     s0 = AR1Sum + s0;
   end;  
+  overduetot[0] = blankval; overduetot[1] = blankval; overduetot[2] = blankval;
+  currenttot[0] = blankval; currenttot[1] = blankval; currenttot[2] = blankval;
+  notduetot[0] = blankval; notduetot[1] = blankval; notduetot[2] = blankval;
+  TotalCurrent[0] = blankval; TotalCurrent[1] = blankval; TotalCurrent[2] = blankval;
 
   if (backdatf) then begin
     ResetLoop(IPrsr);
@@ -361,7 +369,7 @@ L22:;
           end;
           if ((nonblank(RepSpec.f3)) and (RepSpec.f3<>CUr.CustCat)) then begin testf = false; end;
           if (nonblank(RepSpec.f4)) then begin
-            if (SetInSet(RepSpec.f4,CUr.Classification)==false) then begin
+            if (SetInSet2(RepSpec.f4,CUr.Classification)==false) then begin
               testf = false;
             end;
           end;
@@ -393,7 +401,7 @@ L22:;
                 ivrwcnt = MatRowCnt(IVr);
                 for (ivi=0;ivi<ivrwcnt;ivi=ivi+1) begin
                   MatRowGet(IVr,ivi,IVrw);
-                  if (IVrw.stp==kInvoiceRowTypeGiftVoucherPayment or IVrw.stp==kInvoiceRowTypeCashPayment or IVrw.stp==kInvoiceRowTypeCreditCardPayment or IVrw.stp==kInvoiceRowTypeSwishPayment or IVrw.stp==kInvoiceRowTypeLoyaltyPointsPayment or IVrw.stp==kInvoiceRowTypeChequePayment) then begin
+                  if (IVrw.stp==kInvoiceRowTypeGiftVoucherPayment or IVrw.stp==kInvoiceRowTypeCashPayment or IVrw.stp==kInvoiceRowTypeCreditCardPayment or IVrw.stp==kInvoiceRowTypeSwishPayment or IVrw.stp==kInvoiceRowTypeQRPayment or IVrw.stp==kInvoiceRowTypeLoyaltyPointsPayment or IVrw.stp==kInvoiceRowTypeChequePayment) then begin
                     test2f = true;
                     ivi = ivrwcnt;
                   end;
@@ -433,7 +441,8 @@ L22:;
               rs = rvalb1;
 //                rs = MulRateToBase1(IVr.CurncyCode,rval,IVr.FrRate,IVr.ToRateB1,IVr.ToRateB2,IVr.BaseRate1,IVr.BaseRate2,DefaultCurRoundOff);
   //            rs2 = MulRateToBase2(IVr.CurncyCode,rval,IVr.FrRate,IVr.ToRateB1,IVr.ToRateB2,IVr.BaseRate1,IVr.BaseRate2,DefaultCurRoundOff);
-              Base1ToBase2(rs,IVr.TransDate,rs2);
+//              Base1ToBase2(rs,IVr.TransDate,rs2);
+              rs2 = MulRateToBase2(IVr.CurncyCode,rval,IVr.FrRate,IVr.ToRateB1,IVr.ToRateB2,IVr.BaseRate1,IVr.BaseRate2,DefaultCurRoundOff);
               if (rval==0) then begin testf = false; end;
               if (blank(RepSpec.vals0)==false) then begin
                 if (rval<RepSpec.vals0) then begin testf = false; end;
@@ -515,7 +524,7 @@ L22:;
         
         if ((RepSpec.flags[0]==0) or (latedays<0)) then begin
           if ((blank(RepSpec.f3)) or (RepSpec.f3==CUr.CustCat)) then begin testf = true; end;
-          if ((blank(RepSpec.f4)) or (SetInSet(RepSpec.f4,CUr.Classification)==true)) then begin
+          if ((blank(RepSpec.f4)) or (SetInSet2(RepSpec.f4,CUr.Classification)==true)) then begin
             testf = true;
           end;
           if (nonblank(RepSpec.f5)) then begin
@@ -558,7 +567,7 @@ L22:;
             if (IVr.SalesGroup!=RepSpec.TransStr) then begin testf = false; end; 
           end;
           if (nonblank(RepSpec.f4)) then begin
-            if (SetInSet(RepSpec.f4,CUr.Classification)==false) then begin
+            if (SetInSet2(RepSpec.f4,CUr.Classification)==false) then begin
               testf = false;
             end;
           end;
@@ -582,7 +591,7 @@ L22:;
           if ((RepSpec.flags[13]==1) and (IVr.InvType!=kInvoiceTypeInterest)) then begin testf = false; end;
           if ((RepSpec.flags[15]==1) and (IVr.InvType!=kInvoiceTypeDownpayment)) then begin testf = false; end;
           if (nonblank(RepSpec.ObjStr)) then begin
-            if (SetInSet(RepSpec.ObjStr,IVr.Objects)==false) then begin
+            if (SetInSet2(RepSpec.ObjStr,IVr.Objects)==false) then begin
               testf = false;
             end;
           end;
@@ -646,18 +655,18 @@ L22:;
             AddInstalmentInvoiceBalanceTotals(RepSpec,IVr,CurrentDate,overduetot,currenttot,notduetot);
           end else begin
             if (latedays<0) then begin
+              overduetot[0] = overduetot[0] + rval;
               overduetot[1] = rs + overduetot[1];
               overduetot[2] = rs2 + overduetot[2];
-              overduetot[0] = overduetot[0] + rval;
             end else begin
               if (latedays==0) and (Agedb.ActualInvoices!=0) then begin
+                currenttot[0] = currenttot[0] + rval;
                 currenttot[1] = currenttot[1] + rs;
                 currenttot[2] = currenttot[2] + rs2;
-                currenttot[0] = currenttot[0] + rval;
               end else begin
+                notduetot[0] = notduetot[0] + rval;
                 notduetot[1] = notduetot[1] + rs;
                 notduetot[2] = notduetot[2] + rs2;
-                notduetot[0] = notduetot[0] + rval;
               end;
             end;
           end;
@@ -812,7 +821,7 @@ if (RepSpec.flags[1]==1) then begin
   end;    
 end;  
 if (nonblank(RepSpec.f4)) then begin
-  if (SetInSet(RepSpec.f4,CUr.Classification)==false) then begin
+  if (SetInSet2(RepSpec.f4,CUr.Classification)==false) then begin
     testf = false;
   end;
 end;
@@ -1192,15 +1201,15 @@ end;
         Gray_Divider(400,480);
       end;
   end;
+  overduetot[0] = blankval;
   overduetot[1] = blankval;
   overduetot[2] = blankval;
-  overduetot[0] = blankval;
+  notduetot[0] = blankval;
   notduetot[1] = blankval;
   notduetot[2] = blankval;
-  notduetot[0] = blankval;
+  currenttot[0] = blankval;
   currenttot[1] = blankval;
   currenttot[2] = blankval;
-  currenttot[0] = blankval;
   if (RepSpec.ArtMode==5) then begin
     if (CustOut==true) then begin
       StartFormat(15);

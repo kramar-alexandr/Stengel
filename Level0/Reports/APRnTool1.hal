@@ -1,3 +1,4 @@
+external function Boolean SetInSet2(string,string);
 external procedure YcToStr(Integer,var string);
 external procedure GetAccPeriodComments(Integer,Date,var string,var string,var string,var string,var string,var string,var string);
 external procedure PrintAgedLine(val,val,val,val,val,val,val,val,val,val,val,Integer,Integer,string);
@@ -327,7 +328,7 @@ BEGIN
                     testf = ObjectTypeMatch(OPrw.Objects,RepSpec.ObjType);
                   end;
                   if (nonblank(RepSpec.ObjStr)) then begin
-                    testf = SetInSet(RepSpec.ObjStr,OPrw.Objects);
+                    testf = SetInSet2(RepSpec.ObjStr,OPrw.Objects);
                   end;
                 end;
               end;
@@ -396,7 +397,7 @@ BEGIN
                       testf = ObjectTypeMatch(OPrw.Objects,RepSpec.ObjType);
                     end;
                     if (nonblank(RepSpec.ObjStr)) then begin
-                      testf = SetInSet(RepSpec.ObjStr,OPrw.Objects);
+                      testf = SetInSet2(RepSpec.ObjStr,OPrw.Objects);
                     end;
                  end;
                 end;
@@ -416,7 +417,7 @@ BEGIN
                         testf = ObjectTypeMatch(CLOutr.Objects,RepSpec.ObjType);
                       end;
                       if (nonblank(RepSpec.ObjStr)) then begin
-                        testf = SetInSet(RepSpec.ObjStr,CLOutr.Objects);
+                        testf = SetInSet2(RepSpec.ObjStr,CLOutr.Objects);
                       end;
                       i = rwcnt;
                     end;
@@ -438,7 +439,7 @@ BEGIN
                          testf = ObjectTypeMatch(CLInr.Objects,RepSpec.ObjType);
                       end;
                      if (nonblank(RepSpec.ObjStr)) then begin
-                       testf = SetInSet(RepSpec.ObjStr,CLInr.Objects);
+                       testf = SetInSet2(RepSpec.ObjStr,CLInr.Objects);
                      end;
                      i = rwcnt;
                     end;

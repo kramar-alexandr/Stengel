@@ -1206,6 +1206,20 @@ BEGIN
         PrintValue("F_BELOPP",IVrw.Sum,M4Val,LangNrr,SFb,negamountf);          
         endformrowf = true;
       end;
+    case kInvoiceRowTypeQRPayment:
+      endformrowf = false;
+      if (FIELDINFORM("F_PAYMODESUMTEXT")==false) or (FIELDINFORM("F_PAYMODESUMAMOUNT")==false) then begin
+        OUTFORMFIELD("F_ROWNAME",USetStr(8109));
+        OUTFORMFIELD("F_SPECIFIKATION",IVrw.Spec);
+        OUTFORMFIELD("F_CREDCARDROW",IVrw.CreditCard);  
+        if (FIELDINFORM("F_CREDCARDTYPEROW")) then begin
+          GetCreditCardType(IVrw.CreditCard,tstr);
+          OUTFORMFIELD("F_CREDCARDTYPEROW",tstr);
+        end;  
+        OUTFORMFIELD("F_AUTHORIZATIONROW",IVrw.AuthorizationCode);        
+        PrintValue("F_BELOPP",IVrw.Sum,M4Val,LangNrr,SFb,negamountf);          
+        endformrowf = true;
+      end;
   end;
   PrintInvoiceRow_Payments = endformrowf;
   RETURN;
@@ -1451,8 +1465,8 @@ LLPrintInvoiceRows:;
         PrintValueInclZero("F_SUBTOTALAMOUNT",IVrw.Sum,M4Val,LangNrr,SFb,false);
         OUTFORMFIELD("F_SPECIFIKATION",IVrw.Spec);
         OutFormImage(dummyINr);
-        EndFormRow;
-        OutFormImage(dummyINr);
+//        EndFormRow;
+//        OutFormImage(dummyINr);
       case kInvoiceRowTypeGiftVoucherSold:
         endformrowf = PrintInvoiceRow_Payments(IVrw,LangNrr,SFb,negamountf);
       case kInvoiceRowTypeGiftVoucherPayment:
@@ -1464,6 +1478,8 @@ LLPrintInvoiceRows:;
       case kInvoiceRowTypeCreditCardPayment:
         endformrowf = PrintInvoiceRow_Payments(IVrw,LangNrr,SFb,negamountf);
       case kInvoiceRowTypeSwishPayment:
+        endformrowf = PrintInvoiceRow_Payments(IVrw,LangNrr,SFb,negamountf);
+      case kInvoiceRowTypeQRPayment:
         endformrowf = PrintInvoiceRow_Payments(IVrw,LangNrr,SFb,negamountf);
       case kInvoiceRowTypeHeader:
         OUTFORMFIELD("F_SPECIFIKATION",IVrw.Spec);

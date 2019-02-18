@@ -640,12 +640,27 @@ begin
   return;
 end;
 
+updating procedure UpdateVEIV(record PUVc PUr)
+begin
+  record VEIVVc VEIVr;
+  record VEIVVc oldVEIVr;
+  
+  VEIVr.PUSerNr = PUr.SerNr;
+  if (ReadFirstKey("PUSerNr",VEIVr,1,true)) then begin
+    RecordCopy(oldVEIVr,VEIVr);
+    VEIVr.PUSerNr = -1;
+    RecordUpdate(oldVEIVr,VEIVr,false);
+  end;
+  return;
+end;
+
 global
 updating function LongInt PUVcRecordRemoveAfter(var record PUVc PUr,record PUVc PU2r,LongInt stat,LongInt long4)
 begin
   LongInt res;
 
   RemovePU(PUr);
+  UpdateVEIV(PUr);
   PUVcRecordRemoveAfter = res;
   return;
 end;
@@ -1089,6 +1104,11 @@ begin
     end;
     if (ReadFirstItem(PUrw.ArtCode,INr,true,true)==false) then begin
       RecordCheckError(1120," " & PUrw.ArtCode,i,"ArtCode");      
+      res = -1;
+      goto L99PUVcRecordCheck;
+    end;
+    if (INr.Terminated!=0) then begin
+      RecordCheckError(1266," " & PUrw.ArtCode,i,"ArtCode");      
       res = -1;
       goto L99PUVcRecordCheck;
     end;
@@ -1550,6 +1570,8 @@ begin
   Boolean gToDualBase,gBase1ToBase2;
   val fr,to1,to2,br1,br2,t;
   string 10 curncy;
+  record PUVc cPUr;
+  transaction Boolean gPUVcRecordImport_RecordExists;
 
   BlockLoad(cvm);
   if (cvm.DualBaseCurrencyFlag!=0) then begin gToDualBase = true; end;
@@ -1584,6 +1606,8 @@ begin
   if (PUr.NoTAXonVAT==-1) then begin
     PUr.NoTAXonVAT = 0;
   end;
+  cPUr.SerNr = PUr.SerNr;
+  gPUVcRecordImport_RecordExists = ReadFirstMain(cPUr,1,true);
   PUVcRecordImport = res;
   return;
 end;
@@ -1593,13 +1617,16 @@ updating function LongInt PUVcRecordImportAfter(var record PUVc PUr,record PUVc 
 begin
   LongInt res;
   Integer err;
+  transaction Boolean gPUVcRecordImport_RecordExists;
     
   if (PUr.OKFlag!=0) then begin
-    PurUpdateSerialNr(PUr,true,false);
-    if (ImportingTextBackup==false and CanOKStockRecord(err)==true) then begin
-      PurUpdateStock(PUr,false);
-      PurUpdateCostPrice(PUr,false);  // this should be called during import since records are from other systems
-      PurUpdateItemHist(PUr);
+    if (gPUVcRecordImport_RecordExists==false) then begin
+      PurUpdateSerialNr(PUr,true,false);
+      if (ImportingTextBackup==false and CanOKStockRecord(err)==true) then begin
+        PurUpdateStock(PUr,false);
+        PurUpdateCostPrice(PUr,false);  // this should be called during import since records are from other systems
+        PurUpdateItemHist(PUr);
+      end;
     end;
   end;
   PUVcRecordImportAfter = res; 
