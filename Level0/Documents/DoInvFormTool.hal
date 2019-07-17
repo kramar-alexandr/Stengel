@@ -1404,6 +1404,9 @@ LLPrintInvoiceRows:;
             OUTFORMFIELD("F_BESKRIVNING",tstr);
           end else begin
             tstr = USetStr(1807) & CreateInvoiceNumber(IVrw.OrdRow,IVrw.CredOfficialSerNr);
+            if(nonblank(IVrw.CredOfficialSerNr))then begin// Edit ************************** BPI Ukraine - KramarAlexandr - 03, 17 07 2019 y. at 4:39:01 PM
+            	tstr = USetStr(1807) & IVrw.CredOfficialSerNr;
+            end;
             OUTFORMFIELD("F_SPECIFIKATION",tstr);
           end;
 //          tstr = USetStr(1807) & CreateInvoiceNumber2(IVrw.OrdRow);

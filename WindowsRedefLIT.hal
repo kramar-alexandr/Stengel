@@ -388,6 +388,7 @@ begin
   EnterSkip(ArtCode);
   MatText(t=kInvoiceRowTypeCredit,32,"Faktūros kreditas",true);
   MatCol(t,208,"",0,OrdRow,false,ARSClass);
+  MatCol(t,308,"",0,CredOfficialSerNr,false,0);//MatText(t,-216,"",true);// Edit ************************** BPI Ukraine - KramarAlexandr - 03, 17 07 2019 y. at 4:27:28 PM
   MatCol(t,-216,"",0,Spec,false,0);//MatText(t,-216,"",true);
   MatText(t=kInvoiceRowTypeDebit,32,"Faktūros debetas",true);
   MatCol(t,208,"",0,OrdRow,false,0);
