@@ -36,7 +36,12 @@ begin
 
   RecordAddBegin(PUVc,"stg_PUVc");
     ChangeMatrixField(ArtCode,M4Code,40,INVc);
-
+    ChangeMatrixField(RowCost1,M45Val,0,0);
+    ChangeMatrixField(RowCost2,M45Val,0,0);
+    ChangeMatrixField(RowCost3,M45Val,0,0);
+    ChangeMatrixField(RowCost4,M45Val,0,0);
+    ChangeMatrixField(RowCost5,M45Val,0,0);
+    
     SubsetKeyBegin2(ArtCodeWithDate);
     StoreInBaseKey;
     AppendMatrixFieldToKeyName(ArtCode,0);
