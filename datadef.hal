@@ -129,5 +129,18 @@ begin
 		RecordField(InvFIFO,M4Int,0,0);
 	EndBlock;
 	
+  RecordBegin(STGCreateItemsVc,-,"");
+  VirtualRegister;
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Code,M4Code,40,INVc);
+  ArrayField(Name,M4Str,100,0);
+  ArrayField(Group,M4Code,5,ITVc);
+  ArrayField(Unittext,M4Str,10,0);
+  ArrayField(ItemType,M4Int,0,0);
+  ArrayField(NetWeight,M45Val,0,0);
+  ArrayField(EUCodex,M4Code,20,CommodityVc);
+  EndArray;
+  EndRecord;
   return;
 end;

@@ -118,3 +118,27 @@ begin
   EndWindow;
 
 end;
+
+window STGCreateItemsWClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vm,vs;
+  v = 6; vs = 20; h = 90;
+
+  WindowBegin("Stengel - Items Creation",STGCreateItemsWClass,CGOther,-);//STGCreateItemsTClass,CGHbl,HBlRecType);
+  SetWRect(20,80,800,640);
+  UseView(STGCreateItemsVc);
+  Sizeable(-1,-1,0,0);
+  HalPushButton(-100,v,-20,v+47,"StgCreateItemssm","Run");
+  MatrixBegin(4,60,-21,-20,-,199);
+  MatCol(1,32,"Code",0,Code,false,INSClass);
+  MatCol(1,186,"Description",0,Name,false,0);
+  MatCol(1,350,"Group",0,Group,false,ITSClass);
+  MatCol(1,400,"Unit",0,Unittext,false,UnitSClass);
+  MatCol(1,450,"Type",0,ItemType,false,0);
+  MatCol(1,480,"Net weight",0,NetWeight,false,0);
+  MatCol(1,540,"Commodity Code",0,EUCodex,false,CommoditySClass);
+  EndMatrix;
+  //SpecialMenu("Sukurti prekes",' ',1,"StgCreateItemssm");
+  EndWindow;
+end;

@@ -182,3 +182,28 @@ begin
   EndWindow;
 
 end;
+
+window STGCreateItemsWClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vm,vs;
+  v = 6; vs = 20; h = 90;
+
+  WindowBegin("Stengel - Prekių kūrimas",STGCreateItemsWClass,CGOther,-);//STGCreateItemsTClass,CGHbl,HBlRecType);
+  SetWRect(20,80,800,640);
+  UseView(STGCreateItemsVc);
+  Sizeable(-1,-1,0,0);
+  HalPushButton(-100,v,-20,v+47,"StgCreateItemssm","Vykdyti");
+  MatrixBegin(4,60,-21,-20,-,199);
+  MatCol(1,32,"Kodas",0,Code,false,INSClass);
+  MatCol(1,186,"Aprašymas",0,Name,false,0);
+  MatCol(1,350,"Grupė",0,Group,false,ITSClass);
+  MatCol(1,400,"Vienetas",0,Unittext,false,UnitSClass);
+  MatCol(1,450,"Tipas",0,ItemType,false,0);
+  MatCol(1,480,"Neto svoris",0,NetWeight,false,0);
+  MatCol(1,540,"Nomenklatūros kodas",0,EUCodex,false,CommoditySClass);
+  EndMatrix;
+  //SpecialMenu("Sukurti prekes",' ',1,"StgCreateItemssm");
+  EndWindow;
+
+end;

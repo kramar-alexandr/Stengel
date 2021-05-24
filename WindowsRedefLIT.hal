@@ -24,8 +24,11 @@ external inner function Boolean HasTaxMatrix();
 external inner function Boolean HasCustomerStatusReport();
 external inner function real VATZoneButtonsLabelsLIT(real,real,real,real);
 external inner function Boolean HasApprovals();
+external inner function Boolean ACCEPTANCESTATUSCOLUMNTEST(string);
 
 external inner function Boolean HASMODSL();
+external inner function Boolean HASMODPO();
+external inner function Boolean HASLIMITEDACCESS();
 external inner function Boolean HASMODPOS();
 external inner function Boolean HASMODSL();
 external inner function Boolean HASLANGUAGES();
@@ -1565,6 +1568,71 @@ end;
     RadioButton(h,v,0,0,"Nr.",flags[1]); 
     RadioButton(h,v+=16,1,0,"Pavadinimas",flags[1]);
     
+  end;
+  EndWindow;
+end;
+
+
+window VILClass:1
+  wtag("language","LIT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  Integer pos;
+
+  WindowBegin("Pirkimų faktūros",VILClass,CGmlist,-);
+  SetWRect(20,80,840,350);
+  Sizeable(-1,-1,0,0);
+  SpawnClass(VIDClass);
+  UseView(VIVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"Nr.",SerNr,false,SerNr);
+  RlColKey(79,79,"OK",OKFlag,false,OKFlag);
+  RlColKey(111,111,"Faktūros data",InvDate,false,InvDate);
+  RlColKey(191,191,"Trans. data",TransDate,false,TransDate);
+  pos = 271;
+  if (HasmodPO) then begin
+    RlColKey(pos,pos,"PU. Nr.",POSerNr,false,POSerNr);
+    pos = pos + 60;
+    RlColKey(pos,pos,"Tiekėjo fakt. nr.",InvoiceNr,false,InvoiceNr); 
+  end else begin
+    RlColKey(pos,pos,"Tiek. fakt. nr.",InvoiceNr,false,InvoiceNr);
+  end;
+  if (HasLocalization("ARG,MEX")) then begin 
+    pos = pos + 120;
+  end else begin
+    pos = pos + 120;
+  end;
+//CUST-BEGIN
+  pos = pos - 40;
+  RlColKey(pos,pos,"Nuoroda",RefStr,false,RefStr);
+  pos = pos + 50;
+//CUST-END
+  RlColKey(pos,pos,"Tiekėjas",VECode,false,VECode); 
+  pos = pos + 70;
+  RlColKey(pos,pos,"Pavadinimas",VEName,false,VEName); 
+  if (HasMultiCurrency) then begin
+    if (AcceptanceStatusColumnTest("VIVc")) then begin 
+      CalculatedColumn(-150,-150,"Patv.","VILClassAcceptanceStatus",false);
+    end;
+  RlColKey(-110,-110,"Viso",PayVal,true,PayVal);
+  RlCol(-39,-39,"",CredMark,true);
+  RlCol(-30,-30,"Val.",CurncyCode,true);
+  end else begin
+  RlColKey(-90,-90,"Viso",PayVal,true,PayVal); 
+  RlCol(-10,-10,"",CredMark,true); 
+  end;
+  RlCol(-1,-1,"",Invalid,true);
+  SearchField("Ieškoti");
+  if (HasLimitedAccess) then begin 
+  BrowseSubsetButton(-40,-15);
+  end;
+  if (GuiType==kGuiMetro) then begin
+    RowMenuBegin(""); 
+    RowMenuItem(0,"OK",'G','G',4312,"OKVILsm");  
+    RowMenuItem(1,"Faktūros būklė",'r','r',4300,"VIInfoVILsm"); 
+    EndRowMenu;
+  end else begin
+  SpecialMenu("OK",'G',0,"OKVILsm"); 
+  SpecialMenu("Faktūros būklė",'r',1,"VIInfoVILsm");
   end;
   EndWindow;
 end;

@@ -1,0 +1,56 @@
+global
+updating procedure StgCreateItemssm()
+begin
+  Integer i,rwcnt;
+  integer wn;
+  record INVc INr,IN2r;
+  record STGCreateItemsVc CreateItemsRec;
+  row STGCreateItemsVc CreateItemsrw;
+  string 255 code,tstr;
+  
+  wn = CurWindow;
+  GetWindowRecord(wn,CreateItemsRec);
+  rwcnt=MatRowCnt(CreateItemsRec);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(CreateItemsRec,i,CreateItemsrw);
+    code=CreateItemsrw.Code; 
+    code=trim(code);
+    if (nonblank(code)) then begin
+      if (CreateItemsrw.ItemType<0) or (CreateItemsrw.ItemType>3) then begin
+        MessageBox(1008,"");
+        WindowFieldGoto(wn,CreateItemsRec,i,"ItemType",true);
+        Goto LStgCreateItemssm;
+      end;
+      INr.Code=code;
+      if (ReadFirstMain(INr,1,true)) then begin
+        MessageBox(1545,CreateItemsrw.Code);
+        WindowFieldGoto(wn,CreateItemsRec,i,"Code",true);
+        Goto LStgCreateItemssm;
+      end;
+    end;
+  end;
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(CreateItemsRec,i,CreateItemsrw);
+    code=CreateItemsrw.Code; 
+    code=trim(code);
+    if (nonblank(code)) then begin
+      RecordNew(IN2r);
+      IN2r.Code=Left(code,40);
+      IN2r.Name=Left(CreateItemsrw.Name,100);
+	  tstr=Trim(CreateItemsrw.Group);
+      IN2r.Group=Left(tstr,5);
+      IN2r.ItemType=CreateItemsrw.ItemType;
+	  tstr=Trim(CreateItemsrw.Unittext);
+      IN2r.Unittext=Left(tstr,10);
+	  IN2r.NetWeight=CreateItemsrw.NetWeight;
+	  tstr=Trim(CreateItemsrw.EUCodex);
+      IN2r.EUCodex=left(tstr,20);
+      IN2r.SerNrf=0;
+      if (RecordStore(IN2r,true)) then begin
+      end;
+    end;
+  end;
+  MessageBox(23510,"");
+  LStgCreateItemssm:;
+  return;
+end;

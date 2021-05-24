@@ -1300,6 +1300,9 @@ begin
     end;
     OUTFORMFIELD("F_STNGUNITCOEFF",INr.UnitCoefficient); //EBS// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 14 December 2017 16:35:22
 	  OUTFORMFIELD("F_SVORISNETTO",ConvertValToString(INr.NetWeight)); //EBS// Edit ************************** BPI Ukraine - KramarAlexandr - Thursday, 14 December 2017 16:35:23
+//CUST-BEGIN
+    OUTFORMFIELD("F_SVORISNETTO2",ConvertValToString(IVrw.STG_Weight));
+//CUST-END    
     if (INr.HasExcise==0) then begin
       OUTFORMFIELD("F_HASEXCISE",USetStr(23352));
     end;    
