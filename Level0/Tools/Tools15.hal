@@ -48,11 +48,11 @@ BEGIN
   /*if this is not here then
   put qty 106, price 1500 shpcost(in header) 10 and will be 9.999 after recalculating
   M4ToStr just cuts 6th and rest digits*/
-  if (CFb.Usef==0) then begin
-    tstr = rowcalcvalp;
-  end else begin
+  //if (CFb.Usef==0) then begin
+  //  tstr = rowcalcvalp;
+  //end else begin
     tstr = ValToString(rowcalcvalp,M45Val,SysFormatRec.thousSep,SysFormatRec.decimalPt,0);
-  end;
+  //end;
   rowcalcvalp = StringToVal(tstr,M45Val);
   rv = rowcalcvalp*q;
 /*  SubM4Val(&temp,&rv,&rv);*/
